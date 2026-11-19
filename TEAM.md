@@ -144,15 +144,15 @@ Sản phẩm và kinh doanh. Câu 1.1, 1.6, 2.3, 2.9, 3.2, quyết định v1 v�
 
 ### Đóng góp cụ thể
 
-Soạn bản nháp mục tiêu hệ thống (A1/1.1), câu trả lời đọc khoảng tin cậy (A3/1.5), ngưỡng và hành động tiêu chí cùng câu ranh giới đầu ra (A4/1.6); điền bản đồ dữ liệu và ví dụ drift (B3/2.3), đề xuất các cổng kinh doanh (B7.4/2.9), cập nhật hai file config tương ứng. Có dùng ChatGPT để đọc hướng dẫn, đề xuất câu chữ/ngưỡng và rà tính nhất quán; nhóm cần cùng xem lại và thống nhất trước khi ký tiêu chí/chốt cổng.
+Soạn mục tiêu hệ thống (A1/1.1), ghi cách đọc khoảng tin cậy (A3/1.5), hoàn thiện tiêu chí và ranh giới đầu ra (A4/1.6), điền bản đồ dữ liệu/drift (B3/2.3), cấu hình cổng kinh doanh (B7.4/2.9), viết quyết định v1 tại B8 và quyết định v2 tại C12; bổ sung specification C5 và phân tích kinh doanh C7. Điền và ký `acceptance_criteria.json`, cập nhật `operating_gates.json` mục `business`. Có dùng ChatGPT để đọc hướng dẫn, rà câu chữ và tính nhất quán; đã tự đối chiếu nội dung với số liệu và quyết định nhóm.
 
 ### Bằng chứng
 
-Mã commit, mã lần chạy (`runs/<mã>`), dòng trong phiếu.
+Tiêu chí đã ký: commit `ffb7bc8`, hash `416b7554`; cổng vòng 1: hash `cccf2852`; quyết định v1 B8: commit `dc6694f`, dựa trên `R-base-prepared-20261119-154502-219163`. Cổng kinh doanh: `config/operating_gates.json` mục `business`; dữ liệu/drift: Phiếu B B3; specification và quyết định v2: Phiếu C C5/C12. Mã chạy chính thức S2/base sau sửa còn do Huyền bổ sung tại Phiếu C C0/C7/C12.
 
 ### Exit ticket
 
-Một điều học được, một điều còn chưa chắc.
+Một điều học được: kết quả an toàn tổng thể có thể che phân khúc có ROI sát ngưỡng hoặc chi phí cao hơn xử lý tay; cần xem report theo kho và giữ điều kiện dừng gắn với từng chỉ số. Một điều còn chưa chắc: ROI và tỷ lệ chuyển người khi REFUND-v4 có hiệu lực, cùng tỷ lệ đơn thiếu/sai kho trong dữ liệu thật; cần đo lại trong pilot trước khi mở rộng.
 
 ## BuiThuPhuong-2A202604080
 
