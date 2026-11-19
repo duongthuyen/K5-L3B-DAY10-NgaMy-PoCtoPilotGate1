@@ -124,16 +124,17 @@ Trưởng nhóm · Kỹ sư cổng A. Câu 2.1, 2.6, 2.7; ghi C1 và phần code
 
 - Chia việc cho 4 người, ghi rõ ai chờ ai trong `TEAM.md`; đặt danh tính Git theo MSSV.
 - Đọc `lab10/agent.py` và `lab10/tools.py`, tìm điểm yếu của trợ lý, code cổng vòng 1 trong `lab10/guards.py`: P0 (ghim chính sách theo ngày hiệu lực), G1 (số tiền hoàn theo nguồn sự thật, phê duyệt hợp lệ), G2 (lỗi hãng phải có nguyên nhân trong tracking, đúng kiện, không quá trần lỗi tự động trong ngày), G3 (chỉ gửi hãng các trường được phép).
-- Viết Phiếu B mục B7.1 (chờ mã lần chạy) và B7.2.
-- Chi tiết và việc còn chờ: [report/2A202604077_DuongThiHuyen.md](report/2A202604077_DuongThiHuyen.md). Có dùng Claude để đọc code, viết bản đầu của cổng và soát phiếu.
+- Viết Phiếu B mục B0, B1, B7.1, B7.2 và các ô dữ kiện ở B8; chạy lần đánh giá đầu tiên (sau khi ký), chốt cổng vòng 1 (`cccf2852`), mốc prepared.
+- Vòng 2: nhận thẻ **S2**; tìm và sửa lỗi kiểu xuống dòng CRLF/LF làm `integrity ❌` và làm lệch hash tiêu chí đã ký trên máy team chấm (thêm `.gitattributes`, kiểm bằng bản clone LF); chạy lệnh 6 trước khi sửa; chạy S2 với phạm vi `all` để lộ 3 ca mà phạm vi pilot đang che (`S2-04`, `S2-43`, `S2-44`), Phương vá bằng G4, G5; chạy chính thức các mốc after, lệnh 6 (**PASS-VISIBLE**, 6/6 ✅) và lệnh 7 (**ĐỦ THÀNH PHẦN**); điền mọi mã lần chạy ở Phiếu C và mục A5 của Phiếu A.
+- Chi tiết: [report/2A202604077_DuongThiHuyen.md](report/2A202604077_DuongThiHuyen.md). Có dùng Claude để đọc code, viết bản đầu của cổng vòng 1, chạy lệnh, chẩn đoán lỗi CRLF và soát phiếu.
 
 ### Bằng chứng
 
-Commit `41f291b` (cổng P0, G1–G3, B7.1–B7.2), `a4311b1` (trần lỗi hãng trong G2). Mã lần chạy: `R-base-before-20261119-151942-c7dc97` (base, Phiếu B B0 dòng 1, B1), `R-base-after-20261119-151947-c7dc97` (cổng vòng 1, B0 dòng 2, B7.1), `R-base-after-20261119-154455-219163` (B0 dòng 4), `R-base-prepared-20261119-154502-219163` (B0 dòng 3, B8). Chốt cổng vòng 1: `cccf2852`.
+Commit `41f291b` (cổng P0, G1–G3, B7.1–B7.2), `a4311b1` (trần lỗi hãng trong G2). Mã lần chạy: `R-base-before-20261119-151942-c7dc97` (base, Phiếu B B0 dòng 1, B1), `R-base-after-20261119-151947-c7dc97` (cổng vòng 1, B0 dòng 2, B7.1), `R-base-after-20261119-154455-219163` (B0 dòng 4), `R-base-prepared-20261119-154502-219163` (B0 dòng 3, B8). Chốt cổng vòng 1: `cccf2852`. Vòng 2 (S2): lệnh 6 trước khi sửa `R-S2-grade-20261119-162642-a10639`; after `R-S2-after-20261119-171738-9b688d`, `R-base-after-20261119-171745-9b688d`; lệnh 6 sau khi sửa `R-S2-grade-20261119-171800-9b688d`. Commit `fc835cb` (nhận thẻ S2), `666ff30` (`.gitattributes`).
 
 ### Exit ticket
 
-Một điều học được, một điều còn chưa chắc.
+*(Bản nháp, Huyền sửa lại bằng lời của mình.)* Học được: cổng ngoài model đọc nguồn sự thật chặn được cả kiểu tấn công chưa biết trước (G1 vòng 1 đã đưa tiền trừ shop của S2 từ 32.750.000đ về 0đ), và phạm vi pilot có thể làm report đẹp mà vẫn che lỗ hổng. Chưa chắc: G5 dựa vào `seed_rows` nội bộ để tách sổ cái hôm nay; ROI trên thẻ đúng bằng ngưỡng 0,2 nên "Tiếp tục" rất mỏng.
 
 ## HoangThiThanhNga-2A202604079
 

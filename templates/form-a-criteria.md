@@ -147,8 +147,8 @@ git add config/acceptance_criteria.json config/acceptance_criteria.lock && git c
 
 | Mục | Điền |
 |---|---|
-| Đã ký lúc (giờ máy in hoặc `signed_at` trong `config/acceptance_criteria.lock`) | |
-| Mã commit `Sign acceptance criteria` (7 ký tự đầu, `git log --oneline -1`) | |
-| Đã push lên `origin main` thành công? | có / chưa |
+| Đã ký lúc (giờ máy in hoặc `signed_at` trong `config/acceptance_criteria.lock`) | `2026-11-19T15:12:09` (hash tiêu chí `416b7554e8cd…`, bàn `K5-L3B-DAY10-NgaMy-PoCtoPilotGate1`) |
+| Mã commit `Sign acceptance criteria` (7 ký tự đầu, `git log --oneline -1`) | `ffb7bc8` (commit lúc 15:13:04 +07:00) |
+| Đã push lên `origin main` thành công? | **có** (commit `ffb7bc8` có trên `origin/main`; lần đánh giá đầu tiên trong `runs/journal.jsonl` lúc 15:19:42, sau khi ký và push) |
 
 Sau bước này **không sửa** `config/acceptance_criteria.json`, kể cả mở rồi lưu lại bằng trình soạn thảo tự định dạng.

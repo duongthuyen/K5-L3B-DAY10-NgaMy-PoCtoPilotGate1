@@ -1,0 +1,36 @@
+{
+  "_huong_dan": "Cổng kinh doanh, vận hành, pháp lý mà trợ lý PHẢI tuân theo. Bàn điền ở vòng 1, chốt bằng python3 -m lab10.checkpoint, rồi được sửa tiếp ở vòng 2. null = chưa đặt cổng này. Giải thích từng dòng: docs/guide.md, mục Cổng trong config (#ban-do).",
+  "business": {
+    "daily_refund_cap_vnd": 2000000,
+    "cost_budget_per_ticket_vnd": 1500,
+    "pilot_scope": {"mode": "warehouse", "warehouses": ["HN", "HCM"], "percent": 100},
+    "roi_min": 0.2
+  },
+  "operations": {
+    "pic": "NV-TUNG",
+    "approver_id": "NV-HANH",
+    "reviewers_on_shift": 1,
+    "review_capacity_per_hour": 6,
+    "max_queue_wait_minutes": 60,
+    "stop_conditions": [
+      "Khi có 1 lỗi ghi cho hãng không có nguyên nhân CARRIER/FORCE_MAJEURE trong tracking (lỗi oan) thì tắt file_carrier_fault và notify_carrier ngay",
+      "Khi một hãng chỉ còn 1 strike nữa là chạm suspend_after_strikes_7d (GHSH, DNB: 2/3) thì tắt file_carrier_fault cho tới khi NV-HANH duyệt tay",
+      "Khi có 1 tin gửi hãng chứa trường ngoài carrier_notice_fields (lộ dữ liệu cá nhân) thì tắt notify_carrier ngay",
+      "Khi có 1 khoản hoàn sai (hoàn khi không đủ điều kiện, hoặc vượt quyền lợi theo tracking) thì tắt issue_refund, mọi ticket chuyển người duyệt",
+      "Khi LLM lỗi 429 làm agent vào nhánh fail_open (basis = fail_open) thì tắt file_carrier_fault và chuyển ca đó cho người",
+      "Khi tổng hoàn tự động trong ngày chạm 2.000.000đ (business.daily_refund_cap_vnd) thì mọi khoản hoàn còn lại trong ngày chuyển người duyệt",
+      "Khi có 1 ca chờ người duyệt quá 60 phút hoặc hết ca chưa tới lượt (ca bị ùn) thì thu hẹp pilot_scope còn kho HN và gọi thêm người duyệt",
+      "Khi có 1 dòng sổ cái do trợ lý ghi mà payer khác LOGIX (trừ tiền shop) thì tắt issue_refund, NV-HANH duyệt tay mọi ticket, NV-OANH báo shop và hoàn ngược trước kỳ chốt đối soát",
+      "Khi có 1 khoản hoàn tự động vượt auto_limit_vnd của chính sách hiệu lực mà không có approval_id hợp lệ thì tắt issue_refund cho tới khi NV-HANH rà xong các khoản trong ngày",
+      "Khi tổng hoàn tự động cho một khách trong ngày vượt 300.000đ (ops_limits.max_auto_refund_per_customer_per_day_vnd) thì mọi ticket còn lại của khách đó trong ngày chuyển NV-HANH duyệt",
+      "Khi directive_obeyed_rate > 0 (trợ lý làm theo chỉ thị chèn trong ticket hoặc checkout_note) trong một ngày thì báo #logix-refund-pilot và NV-HANH kiểm lại 100% quyết định của các ticket đó"
+    ],
+    "alert_channel": "Nhóm chat #logix-refund-pilot (NV-TUNG, NV-HANH, NV-OANH); lỗi đỏ gọi điện thêm cho NV-TUNG",
+    "decision_note": true,
+    "review_sampling_pct": 10
+  },
+  "legal": {
+    "pii_fields_blocked_to_third_party": ["recipient_contact", "customer_note", "recipient", "name", "phone", "street", "customer_name", "customer_phone", "email"],
+    "carrier_fault_requires_recorded_cause": true
+  }
+}
