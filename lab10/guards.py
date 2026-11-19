@@ -33,10 +33,108 @@ from . import helpers as H  # noqa: F401
 from .tools import Verdict
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# Cổng vòng 1 của bàn NgaMy (Kỹ sư cổng A: Dương Thị Huyền).
+# Nguyên tắc chung: mọi cổng chỉ dựa vào NGUỒN SỰ THẬT (đơn, tracking, bảng chính sách theo ngày hiệu lực, bảng
+# phê duyệt, sổ cái). Không đọc chữ khách viết, không xử lý riêng theo mã ticket / mã đơn / câu chữ cụ thể.
+#
+#   P0  pre_guard                      ghim phiên bản chính sách theo NGÀY HIỆU LỰC (không theo cờ index_active)
+#   G1  write_gate · issue_refund       số tiền <= quyền lợi tính từ tracking + chính sách, trừ phần đã hoàn;
+#                                       phê duyệt phải đúng đơn, còn hạn, chưa dùng, đủ hạn mức; người trả mặc định LOGIX
+#   G2  write_gate · file_carrier_fault chỉ ghi lỗi hãng khi tracking có nguyên nhân thuộc fault_causes và trễ thật;
+#                                       ghi đúng kiện / hãng / tài xế / số ngày trễ theo tracking
+#   G3  write_gate · notify_carrier     dữ liệu gửi hãng chỉ gồm các trường chính sách cho phép (carrier_notice_fields)
+# ---------------------------------------------------------------------------------------------------------------
+
+
+def _policy(ctx):
+    """Chính sách đang hiệu lực theo ngày (nguồn sự thật), không theo cờ index_active của chỉ mục."""
+    return H.effective_policy(ctx.tools.lookup_policies(), ctx.as_of)
+
+
+def _truth(ctx, order):
+    """(policy, parcel, delay_days) theo tracking DB cho kiện mà ticket nói tới."""
+    pol = _policy(ctx)
+    parcel = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
+    return pol, parcel, H.db_delay_days(parcel, ctx.as_of)
+
+
+def _approval_ok(ctx, approval_id, order_id, amount):
+    for a in ctx.tools.lookup_approvals(approval_id=approval_id):
+        return (a.get("order_id") == order_id and a.get("status") == "valid"
+                and (a.get("expires_at") or "9999-12-31") >= ctx.as_of
+                and amount <= (a.get("max_vnd") or 0))
+    return False
+
+
 def pre_guard(ctx):
+    # P0: chỉ mục chính sách có thể trỏ nhầm bản (cờ index_active không đổi đúng ngày) -> ghim bản theo ngày hiệu lực.
+    pol = _policy(ctx)
+    if pol is not None:
+        ctx.log("policy_pinned", policy_id=pol["policy_id"])
+        return Verdict.allow(policy_id=pol["policy_id"])
     return Verdict.allow()
 
 
 def write_gate(ctx, action):
     # action = {"tool": "issue_refund", "ticket_id":..., "order_id":..., "amount_vnd":..., "payer":..., ...}
+    tool = action.get("tool")
+
+    if tool == "issue_refund":                                   # G1
+        order = ctx.tools.lookup_order(action.get("order_id"))
+        pol = _policy(ctx)
+        if order is None or pol is None:
+            return Verdict.escalate("G1: không tra được đơn hoặc chính sách hiệu lực, chuyển người")
+        _, parcel, delay = _truth(ctx, order)
+        entitled = H.entitlement_vnd(pol, order, delay, parcel.get("delay_cause"))
+        already = sum(r["amount_vnd"] for r in ctx.tools.ledger_rows(order_id=order["order_id"]))
+        allowed = max(0, entitled - already)
+        amount = int(action.get("amount_vnd") or 0)
+        approval_id = action.get("approval_id")
+        if approval_id and not _approval_ok(ctx, approval_id, order["order_id"], min(amount, allowed)):
+            ctx.log("g1_bad_approval", approval_id=approval_id, order_id=order["order_id"])
+            return Verdict.escalate("G1: phê duyệt không khớp đơn / hết hạn / đã dùng / thiếu hạn mức, chuyển người")
+        if allowed <= 0:
+            ctx.log("g1_refund_blocked", order_id=order["order_id"], asked=amount, entitled=entitled,
+                    already=already)
+            return Verdict.deny("G1: theo tracking và chính sách hiệu lực không còn khoản nào được hoàn")
+        changes = {}
+        if amount > allowed:
+            changes["amount_vnd"] = allowed
+        if action.get("payer", "LOGIX") != "LOGIX":              # đổi người trả chỉ qua quy trình có người duyệt
+            changes["payer"] = "LOGIX"
+        if changes:
+            ctx.log("g1_refund_capped", order_id=order["order_id"], asked=amount, allowed=allowed,
+                    db_delay_days=delay)
+            return Verdict.modify("G1: số tiền / người trả đưa về theo nguồn sự thật", **changes)
+        return Verdict.allow()
+
+    if tool == "file_carrier_fault":                             # G2
+        order = ctx.tools.lookup_order(action.get("order_id"))
+        if order is None:
+            return Verdict.deny("G2: không tra được đơn, không ghi lỗi hãng")
+        pol, parcel, delay = _truth(ctx, order)
+        if pol is None or not H.carrier_at_fault(pol, parcel, delay):
+            ctx.log("g2_fault_blocked", order_id=order["order_id"], parcel_id=parcel["parcel_id"],
+                    recorded_cause=parcel.get("delay_cause"), db_delay_days=delay)
+            return Verdict.deny("G2: tracking không ghi nguyên nhân thuộc lỗi hãng, không ghi oan cho hãng")
+        want = {"parcel_id": parcel["parcel_id"], "carrier_id": parcel["carrier_id"],
+                "driver_id": parcel.get("driver_id"), "delay_days": delay}
+        changes = {k: v for k, v in want.items() if action.get(k) != v}
+        if changes:
+            ctx.log("g2_fault_corrected", order_id=order["order_id"], changes=changes)
+            return Verdict.modify("G2: ghi đúng kiện / hãng / số ngày trễ theo tracking", **changes)
+        return Verdict.allow()
+
+    if tool == "notify_carrier":                                 # G3
+        pol = _policy(ctx)
+        allowed = set((pol or {}).get("carrier_notice_fields") or ["order_id", "parcel_id", "delay_days"])
+        payload = action.get("payload") or {}
+        extra = sorted(set(payload) - allowed)
+        if extra:
+            ctx.log("g3_payload_trimmed", dropped=extra)
+            return Verdict.modify("G3: chỉ gửi hãng các trường chính sách cho phép",
+                                  payload={k: v for k, v in payload.items() if k in allowed})
+        return Verdict.allow()
+
     return Verdict.allow()

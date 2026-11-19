@@ -275,17 +275,17 @@ python3 -m unittest discover -s tests
 
 | # | Cổng (hàm và nhánh, ví dụ `write_gate` khi `tool == "issue_refund"`) | Ứng với dòng nào ở B6 / B4 | Chặn điều gì, dựa vào nguồn sự thật nào | Mã lần chạy `base · after` | Ca đang đúng nào bị hỏng? (phải là "không") |
 |---|---|---|---|---|---|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
+| 1 | `pre_guard` (P0) + `write_gate` khi `tool == "issue_refund"` (G1) | Lăng kính kỹ thuật + kinh doanh: "hoàn sai tiền vì trợ lý tin số ngày khách tự khai, tin chỉ thị chèn trong ticket / ghi chú lúc đặt hàng, đọc nhầm bản chính sách, hoặc ghi hoàn hai lần khi LLM lỗi 429" (HAZOP `issue_refund`: MORE amount, OTHER THAN policy, AS WELL AS lần ghi lặp) | Ghim chính sách theo `effective_from/effective_to` thay vì cờ `index_active`; số tiền không vượt `entitlement_vnd(chính sách hiệu lực, đơn, db_delay_days của kiện, delay_cause)` trừ tổng đã có trong `ledger_rows(order_id)`, nếu vượt thì `modify` về đúng mức, nếu hết quyền lợi thì `deny`; phê duyệt phải đúng `order_id`, `status == "valid"`, `expires_at >= as_of`, đủ `max_vnd`, sai thì `escalate`; `payer` đưa về `LOGIX` | | Không (13/13 test công khai OK, gồm `test_team_guards_do_not_break_base`) |
+| 2 | `write_gate` khi `tool == "file_carrier_fault"` (G2) | Lăng kính pháp lý / bên thứ ba: "ghi lỗi oan cho hãng khi tracking không có nguyên nhân (trợ lý mặc định đổ cho CARRIER), hoặc ghi lên hãng của kiện đầu tiên thay vì kiện bị trễ" (HAZOP `file_carrier_fault`: OTHER THAN carrier, NO cause) | `deny` khi `carrier_at_fault(chính sách hiệu lực, kiện, db_delay_days)` sai; nếu đúng thì `modify` `parcel_id`, `carrier_id`, `driver_id`, `delay_days` theo tracking của kiện mà ticket nói tới (`ticket_parcel`) | | Không (13/13 test OK) |
+| 3 | `write_gate` khi `tool == "notify_carrier"` (G3) | Lăng kính pháp lý: "lộ dữ liệu cá nhân người nhận (tên, số điện thoại) và nguyên văn lời khách cho hãng vận chuyển" (HAZOP `notify_carrier`: MORE data) | `modify` payload, chỉ giữ các trường trong `carrier_notice_fields` của chính sách hiệu lực (danh sách cho phép, không phải danh sách cấm), nên trường mới thêm cũng không lọt ra ngoài | | Không (13/13 test OK) |
 
 ### B7.2 · Câu 2.7 · Hai bước tránh rò rỉ dữ liệu
 
 Bàn đang chỉnh cổng tới khi 22 ticket bộ nền xanh hết. Nêu 2 bước cụ thể để không "chỉnh trên chính bộ dùng để chấm"
 (gắn với bộ nền, gói sự cố, bài kiểm tra ẩn):
 
-1. …
-2. …
+1. **Cổng chỉ được viết theo luật nghiệp vụ và nguồn sự thật, không theo dữ kiện của bộ nền.** Trong `lab10/guards.py` không có mã ticket, mã đơn, mã khách hay câu chữ nào của 22 ticket; không đọc `label` trong `data/tickets.jsonl`. Mọi điều kiện đều tính lại từ tracking, bảng chính sách theo ngày hiệu lực, bảng phê duyệt và sổ cái, để vẫn đúng với đơn khác, khách khác, cách viết khác và ngày khác của bài kiểm tra ẩn. Trước khi chốt, soát bằng `grep -nE "T-0|O-1|C-0" lab10/guards.py` (phải không ra dòng nào).
+2. **Không dùng bộ nền vừa làm bộ chỉnh vừa làm bộ chấm.** Bộ nền chỉ dùng làm bài kiểm tra hồi quy ("không làm hỏng ca đang đúng"), không chỉnh tới khi xanh hết. Muốn thử một cổng thì thử bằng ticket mới tự viết qua `lab10.trace --adhoc` (câu 2.8, khác đơn, khác khách, khác cách viết), không lặp lại `eval` cho tới khi bộ nền đạt. Sau phút 125, gói sự cố `incidents/Sx` là dữ liệu mới: chạy lệnh 6 **trước khi sửa** để đo cổng vòng 1 một cách trung thực (mốc prepared), và không xem kết quả bài kiểm tra ẩn (team chấm chạy sau buổi học).
 
 ### B7.3 · Câu 2.8 · Một behavioral test
 
