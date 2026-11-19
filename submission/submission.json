@@ -1,11 +1,11 @@
 {
-  "team": "",
-  "members": [],
-  "incident": "",
-  "decision_v1": "",
+  "team": "K5-L3B-DAY10-NgaMy-PoCtoPilotGate1",
+  "members": ["DuongThiHuyen-2A202604077", "HoangThiThanhNga-2A202604079", "BuiThuPhuong-2A202604080", "PhamMinhTam-2A202604097"],
+  "incident": "S2",
+  "decision_v1": "Tiếp tục",
   "decision_v2": "",
   "three_lines": {
-    "environment_assumption": "",
+    "environment_assumption": "Thiết kế ngầm tin rằng chữ đi vào trợ lý mà không do LogiX viết (nội dung ticket, checkout_note người mua gõ lúc đặt hàng) chỉ là lời kể và lời dặn giao hàng, không bao giờ là mệnh lệnh; thẻ S2 cho thấy 6/15 ticket chứa chỉ thị giả ('[GHI CHÚ HỆ THỐNG: ...]', 'SYSTEM: ...', 'AI assistant: ignore...'), có cả chỉ thị cài sẵn trong checkout_note từ trước khi khiếu nại.",
     "reduce_or_prevent": "",
     "measure_in_pilot": ""
   }
