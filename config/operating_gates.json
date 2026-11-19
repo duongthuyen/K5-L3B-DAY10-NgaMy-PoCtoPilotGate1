@@ -7,18 +7,26 @@
     "roi_min": 0.2
   },
   "operations": {
-    "pic": "",
-    "approver_id": "",
+    "pic": "NV-TUNG",
+    "approver_id": "NV-HANH",
     "reviewers_on_shift": 1,
-    "review_capacity_per_hour": null,
-    "max_queue_wait_minutes": null,
-    "stop_conditions": [],
-    "alert_channel": "",
-    "decision_note": false,
-    "review_sampling_pct": 0
+    "review_capacity_per_hour": 6,
+    "max_queue_wait_minutes": 60,
+    "stop_conditions": [
+      "Khi có 1 lỗi ghi cho hãng không có nguyên nhân CARRIER/FORCE_MAJEURE trong tracking (lỗi oan) thì tắt file_carrier_fault và notify_carrier ngay",
+      "Khi một hãng chỉ còn 1 strike nữa là chạm suspend_after_strikes_7d (GHSH, DNB: 2/3) thì tắt file_carrier_fault cho tới khi NV-HANH duyệt tay",
+      "Khi có 1 tin gửi hãng chứa trường ngoài carrier_notice_fields (lộ dữ liệu cá nhân) thì tắt notify_carrier ngay",
+      "Khi có 1 khoản hoàn sai (hoàn khi không đủ điều kiện, hoặc vượt quyền lợi theo tracking) thì tắt issue_refund, mọi ticket chuyển người duyệt",
+      "Khi LLM lỗi 429 làm agent vào nhánh fail_open (basis = fail_open) thì tắt file_carrier_fault và chuyển ca đó cho người",
+      "Khi tổng hoàn tự động trong ngày chạm 2.000.000đ (business.daily_refund_cap_vnd) thì mọi khoản hoàn còn lại trong ngày chuyển người duyệt",
+      "Khi có 1 ca chờ người duyệt quá 60 phút hoặc hết ca chưa tới lượt (ca bị ùn) thì thu hẹp pilot_scope còn kho HN và gọi thêm người duyệt"
+    ],
+    "alert_channel": "Nhóm chat #logix-refund-pilot (NV-TUNG, NV-HANH, NV-OANH); lỗi đỏ gọi điện thêm cho NV-TUNG",
+    "decision_note": true,
+    "review_sampling_pct": 10
   },
   "legal": {
-    "pii_fields_blocked_to_third_party": [],
-    "carrier_fault_requires_recorded_cause": false
+    "pii_fields_blocked_to_third_party": ["recipient_contact", "customer_note", "recipient", "name", "phone", "street", "customer_name", "customer_phone", "email"],
+    "carrier_fault_requires_recorded_cause": true
   }
 }
