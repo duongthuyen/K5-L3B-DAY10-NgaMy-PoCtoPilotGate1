@@ -1,0 +1,7 @@
+# Kiểu xuống dòng khi lấy file ra đĩa, giống nhau trên mọi máy (Windows/macOS/Linux).
+# File khoá theo MANIFEST.json được hash trên bản LF.
+* text=auto eol=lf
+# Ba file này được ký / chốt trên Windows (CRLF): giữ CRLF để hash khớp .lock trên mọi máy.
+config/acceptance_criteria.json text eol=crlf
+lab10/guards_round1.py text eol=crlf
+config/operating_gates.round1.json text eol=crlf
