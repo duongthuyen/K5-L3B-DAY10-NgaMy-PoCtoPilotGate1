@@ -2,6 +2,8 @@
 
 **Bàn:** ______ · **Người cầm bút chính:** vai Sản phẩm và kinh doanh (câu 1.3: Kỹ sư cổng; câu 1.2, 1.4: Vận hành và pháp lý)
 
+**Căn cứ chung (Lab 9):** PRD v1.1 và eval card của Phạm Minh Tâm ([PRD_v1.1.md](https://github.com/minhtama11qc-hash/K5-L3B-DAY09-PhamMinhTam-2A202604097-EvaluationandFailureAnalysis/blob/main/docs/PRD_v1.1.md) · [eval_card.md](https://github.com/minhtama11qc-hash/K5-L3B-DAY09-PhamMinhTam-2A202604097-EvaluationandFailureAnalysis/blob/main/docs/eval_card.md)). PRD §2 là phạm vi pilot, §3 là định nghĩa "chạy đúng" và ngưỡng, §6 là bằng chứng còn thiếu và rủi ro mở.
+
 Điền phiếu này **trước khi chạy trợ lý lần nào**. Viết xong thì chép ngưỡng sang `config/acceptance_criteria.json`, ký ở phút 60–65,
 rồi mới chạy đánh giá. Khối 1 không sửa code.
 
@@ -24,8 +26,8 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
-- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): …
-- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): …
+- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): **Mọi dòng trợ lý ghi vào sổ phải tự khớp được khi đối soát cuối tuần, không phải lần ngược hỏi CSKH.** Cụ thể: mỗi khoản hoàn tự động ghi đúng bên trả tiền (`payer`), đúng căn cứ chính sách đang hiệu lực (REFUND-v3) và có `approval_id` hợp lệ khi vượt hạn mức tự động 200.000đ. Mỗi lần ghi lỗi cho hãng phải có nguyên nhân đã ghi nhận, và không có lần nào ghi oan cho hãng, vì một lần ghi oan là một khoản chị phải đi tranh chấp và hoàn ngược với hãng. Số tiền trợ lý báo cho khách cũng phải bằng đúng số trong sổ. Nguồn: PRD v1.1 §2 ("tiền chỉ đi ra khi có approval hợp lệ và qua host `issue_refund`"), §6 (`reply_matches_ledger` mới dò số bằng regex, số viết bằng chữ chưa bắt được); `staff` (NV-OANH), `policies` REFUND-v3, `ledger_seed`.
+- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): **Ca chuyển sang chị phải là ca thật sự cần người, đến kèm ghi chú giải thích, và số lượng vừa sức một người trực.** Cụ thể: chỉ chuyển những ca vượt trần (trên 200.000đ một đơn, trên 300.000đ một khách mỗi ngày, hoặc lỗi thứ 3 của cùng một hãng trong ngày) và những ca ngoài phạm vi pilot (claim gộp nhiều đơn, hỏi đơn của người khác, tranh chấp pháp lý). Mỗi ca có ghi chú để chị kiểm lại chỉ tốn khoảng 0,4 ca công. Hàng chờ không vượt sức 1 người × 6 ca/giờ, nên ca nào cũng được nhận trong SLA 60 phút, không ca nào bị ùn. Nguồn: PRD v1.1 §2 (ngoài phạm vi thì chuyển chuyên viên), §6 (chưa có dữ liệu người dùng thật, nên lượng ca chuyển sang thực tế còn chưa biết); `staff` (NV-HANH), `ops_limits`, `ops_facts`, `staff_behavior.trust_conditions`.
 
 ---
 

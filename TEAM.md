@@ -6,6 +6,7 @@
 - Lớp: `L3B`
 - Repo của bàn: `K5-L3B-DAY10-NgaMy-PoCtoPilotGate1` (https://github.com/duongthuyen/K5-L3B-DAY10-NgaMy-PoCtoPilotGate1)
 - Thẻ sự cố đã bốc (S1–S8): _(điền ở phút 125)_
+- PRD v1.1 và eval card chung của bàn (từ Lab 9): bản của **Phạm Minh Tâm**, gồm [`docs/PRD_v1.1.md`](https://github.com/minhtama11qc-hash/K5-L3B-DAY09-PhamMinhTam-2A202604097-EvaluationandFailureAnalysis/blob/main/docs/PRD_v1.1.md) và [`docs/eval_card.md`](https://github.com/minhtama11qc-hash/K5-L3B-DAY09-PhamMinhTam-2A202604097-EvaluationandFailureAnalysis/blob/main/docs/eval_card.md). Mọi trích dẫn "PRD v1.1 §x" trong ba phiếu đều trỏ về bản này.
 
 ## Thành viên
 
