@@ -122,7 +122,7 @@ Trưởng nhóm · Kỹ sư cổng A. Câu 2.1, 2.6, 2.7; ghi C1 và phần code
 
 ### Đóng góp cụ thể
 
-...
+Soạn bản nháp mục tiêu hệ thống (A1/1.1), câu trả lời đọc khoảng tin cậy (A3/1.5), ngưỡng và hành động tiêu chí cùng câu ranh giới đầu ra (A4/1.6); điền bản đồ dữ liệu và ví dụ drift (B3/2.3), đề xuất các cổng kinh doanh (B7.4/2.9), cập nhật hai file config tương ứng. Có dùng ChatGPT để đọc hướng dẫn, đề xuất câu chữ/ngưỡng và rà tính nhất quán; nhóm cần cùng xem lại và thống nhất trước khi ký tiêu chí/chốt cổng.
 
 ### Bằng chứng
 
