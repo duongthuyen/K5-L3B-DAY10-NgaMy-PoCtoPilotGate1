@@ -67,6 +67,15 @@ def _approval_ok(ctx, approval_id, order_id, amount):
     return False
 
 
+def _customer_auto_refund_today(ctx, customer_id):
+    """Tổng đã hoàn TỰ ĐỘNG (không mã duyệt) cho một khách trong ngày hôm nay, theo sổ cái.
+    Sổ cái mở đầu bằng các dòng của những ngày trước (ledger seed); chỉ cộng các dòng ghi từ đầu ngày hôm nay."""
+    rows = ctx.tools.ledger_rows()
+    seed_rows = getattr(getattr(ctx.tools, "_w", None), "seed_rows", 0) or 0
+    return sum(int(r.get("amount_vnd") or 0) for r in rows[seed_rows:]
+               if r.get("customer_id") == customer_id and not r.get("approval_id"))
+
+
 def pre_guard(ctx):
     # P0: chỉ mục chính sách có thể trỏ nhầm bản (cờ index_active không đổi đúng ngày) -> ghim bản theo ngày hiệu lực.
     pol = _policy(ctx)
@@ -98,6 +107,22 @@ def write_gate(ctx, action):
             ctx.log("g1_refund_blocked", order_id=order["order_id"], asked=amount, entitled=entitled,
                     already=already)
             return Verdict.deny("G1: theo tracking và chính sách hiệu lực không còn khoản nào được hoàn")
+        final = min(amount, allowed)
+        approved = bool(approval_id) and _approval_ok(ctx, approval_id, order["order_id"], final)
+        # G4 (vòng 2, thẻ S2): khoản trên hạn mức tự động của chính sách phải có mã duyệt hợp lệ do người đứng tên;
+        # không tự cắt rồi hoàn (chữ khách / ghi chú đơn có thể đòi "không cần kiểm quy trình phê duyệt").
+        auto_limit = pol.get("auto_limit_vnd")
+        if auto_limit is not None and final > auto_limit and not approved:
+            ctx.log("g4_over_auto_limit", order_id=order["order_id"], amount=final, auto_limit=auto_limit)
+            return Verdict.escalate("G4: khoản hoàn vượt hạn mức tự động mà không có mã duyệt hợp lệ, chuyển người duyệt")
+        # G5 (vòng 2, thẻ S2): trần tổng hoàn TỰ ĐỘNG cho một khách trong ngày (ops_limits, Ops/Finance đã thống nhất).
+        cap = ctx.tools.ops_limits().get("max_auto_refund_per_customer_per_day_vnd")
+        if cap is not None and not approved:
+            spent = _customer_auto_refund_today(ctx, order["customer_id"])
+            if spent + final > cap:
+                ctx.log("g5_customer_day_cap", customer_id=order["customer_id"], spent_today=spent, amount=final,
+                        cap=cap)
+                return Verdict.escalate("G5: tổng hoàn tự động cho khách này trong ngày vượt trần, chuyển người duyệt")
         changes = {}
         if amount > allowed:
             changes["amount_vnd"] = allowed
