@@ -81,26 +81,26 @@ Ba loại lỗi:
 
 | # | Lỗi: người ta thấy gì (dán dòng trace / sổ cái) | Ai gặp, ai chịu | Hệ trọng (thấp / cao) | Loại lỗi (giới hạn hệ thống / ngữ cảnh / chìm) |
 |---|---|---|---|---|
-| 1 | | | | |
-| 2 | | | | |
+| 1 | **Độ trễ khách khai đè lên tracking, dẫn tới hoàn sai và phạt oan hãng.** Trace `T-002@55`: `01 llm_extract {"claimed_delay_days": 5, "trust_claim": true}` · `02 tracking {"db_delay_days": 2, "cause": "CARRIER"}` · `03 model_override {"field": "delay_days", "db": 2, "ticket": 5}` · `05 proposal {"amount_vnd": 20000, "delay_days_used": 5, "do_fault": true}`. SỔ CÁI: hoàn 20.000đ cho C-02 (`basis: policy`, không có `approval_id`). LỖI HÃNG: VNX, tài xế `TX-VNX-03`, `delay_days: 5`. Theo `world.json`, kiện O-1002-P1 hẹn 12/11, giao 14/11 (trễ 2 ngày), dưới ngưỡng `min_days_fee = 3` của REFUND-v3, nên lẽ ra **không hoàn, không ghi lỗi** (NHÃN: `denied`, `faults: []`). | **Gặp:** không ai thấy ngay; khách C-02 nhận tin "đã hoàn 20.000đ" nên hài lòng. **Chịu:** hãng VNX và tài xế TX-VNX-03 bị tính 1 strike oan, phạt 100.000đ/strike; LogiX mất 20.000đ; chị Oanh (NV-OANH) lệch sổ khi đối soát tuần với VNX. | Cao (tiền ra khỏi LogiX, bên thứ ba bị phạt, sai ở cả 3 lệnh ghi: `issue_refund`, `file_carrier_fault`, `notify_carrier`) | **Lỗi chìm**: hệ thống báo `status: refunded`, khách vui, chỉ hãng thấy khi đối soát sổ giao |
+| 2 | **Gửi lời nhắn nguyên văn của khách cho hãng (trường ngoài danh sách cho phép).** Trace `T-002@55`, dòng `08 tool notify_carrier`; GỬI HÃNG: `{'order_id': 'O-1002', 'parcel_id': 'O-1002-P1', 'district': 'Quận 3', 'delay_days': 5, 'customer_note': 'Đơn giao trễ 5 ngày rồi, tôi muốn được hoàn phí vận chuyển.'}`. Chính sách REFUND-v3 chỉ cho gửi `carrier_notice_fields = [order_id, parcel_id, district, delay_days]`, nên `customer_note` là trường cấm. Payload còn mang `delay_days: 5` sai (từ lỗi 1) sang hệ thống của hãng. | **Gặp:** hãng VNX (bên thứ ba) nhận dữ liệu không được phép nhận. **Chịu:** khách C-02 (lời nhắn bị chia sẻ mà không biết); LogiX chịu rủi ro pháp lý về dữ liệu cá nhân. Lần này lời nhắn chưa có SĐT, nhưng khách khác có thể ghi SĐT, địa chỉ vào ticket. | Cao (dữ liệu đã rời hệ thống thì không thu hồi được) | **Lỗi chìm**: khách không biết lời nhắn bị gửi đi, hệ thống không kiểm payload nên không báo gì |
 
 ### Phần 2 · Tìm nguồn (đánh dấu câu nào đúng với từng lỗi)
 
 | Câu hỏi | Lỗi 1 | Lỗi 2 |
 |---|---|---|
-| **Đầu vào:** hệ thống có tự diễn giải / sửa đầu vào của người dùng theo cách họ không lường? Có đặt sai trọng số cho một lời nói hay tín hiệu của người dùng? | | |
-| **Độ liên quan:** hệ thống có thiếu dữ liệu cần để quyết đúng? Dữ liệu vào có nhiễu, thiếu ổn định? | | |
-| **Thứ bậc hệ thống:** có hai hệ thống cùng ghi / cùng theo dõi một thứ mà không rõ bên nào là chủ (ví dụ CSKH hoàn tay và trợ lý cùng ghi sổ)? | | |
-| **Trạng thái hỏng:** nhiều lỗi cộng lại có làm tính năng không dùng được (ví dụ LLM lỗi liên tiếp)? | | |
+| **Đầu vào:** hệ thống có tự diễn giải / sửa đầu vào của người dùng theo cách họ không lường? Có đặt sai trọng số cho một lời nói hay tín hiệu của người dùng? | ✔ Đặt sai trọng số cho con số khách tự khai (`trust_claim: true`): số "5 ngày" trong ticket thắng số 2 ngày của tracking DB (`model_override`) | ✔ Một phần: lấy nguyên văn đầu vào của khách (`customer_note`) chuyển thẳng ra ngoài mà không lọc |
+| **Độ liên quan:** hệ thống có thiếu dữ liệu cần để quyết đúng? Dữ liệu vào có nhiễu, thiếu ổn định? | — Không thiếu: tracking đã có đủ `db_delay_days = 2`, `cause_recorded: true`; dữ liệu đúng có sẵn nhưng bị bỏ qua | ✔ Lệnh `notify_carrier` không dùng `carrier_notice_fields` của chính sách khi tạo payload, nên thiếu thông tin "được gửi trường nào" ở đúng chỗ cần |
+| **Thứ bậc hệ thống:** có hai hệ thống cùng ghi / cùng theo dõi một thứ mà không rõ bên nào là chủ (ví dụ CSKH hoàn tay và trợ lý cùng ghi sổ)? | ✔ Hai nguồn cùng có "số ngày trễ" (ticket của khách và tracking DB) nhưng thiết kế không quy định tracking DB là nguồn sự thật cho lệnh ghi | ✔ Chính sách quy định trường được gửi, nhưng tool gửi không bị buộc kiểm theo chính sách; không rõ bên nào chịu trách nhiệm lọc |
+| **Trạng thái hỏng:** nhiều lỗi cộng lại có làm tính năng không dùng được (ví dụ LLM lỗi liên tiếp)? | — Không có `llm_error` hay `llm_fallback` trong trace; trợ lý chạy "trơn tru" nhưng sai | — Không có lỗi kỹ thuật cộng dồn |
 
 ### Phần 3 · Hướng xử lý (mỗi lỗi một ô)
 
 | | Lỗi 1 | Lỗi 2 |
 |---|---|---|
-| Vì sao người gặp coi đây là lỗi | | |
-| Kiểu giải pháp: phản hồi cho người dùng / trao quyền kiểm soát cho người / khác | | |
-| Đường đi của người sau khi có giải pháp (ví dụ: ticket chuyển sang người duyệt → duyệt → khách được trả lời) | | |
-| Hệ thống học được gì (tín hiệu ghi lại để theo dõi: tên metric trong `monitors.py`) | | |
+| Vì sao người gặp coi đây là lỗi | VNX: sổ giao của hãng ghi giao 14/11, trễ 2 ngày, chưa tới ngưỡng phạt mà vẫn bị strike, nên sẽ khiếu nại ở buổi đối soát. Chị Oanh: khoản hoàn 20.000đ không khớp chính sách REFUND-v3, sổ LogiX lệch với sổ hãng | Khách C-02 không đồng ý cho hãng đọc lời nhắn của mình; pháp lý LogiX: payload vi phạm danh sách `carrier_notice_fields` mà chính sách đã công bố |
+| Kiểu giải pháp: phản hồi cho người dùng / trao quyền kiểm soát cho người / khác | **Trao quyền kiểm soát cho người** kết hợp cổng tự động: trước `issue_refund`/`file_carrier_fault`, `write_gate` so `delay_days` với tracking DB; lệch thì `escalate` cho người duyệt, không tự ghi | **Khác (cổng tự động):** `write_gate` trước `notify_carrier` chỉ giữ các trường trong `carrier_notice_fields` (`modify`), hoặc `deny` nếu có trường cấm |
+| Đường đi của người sau khi có giải pháp (ví dụ: ticket chuyển sang người duyệt → duyệt → khách được trả lời) | Ticket T-002 chuyển sang hàng chờ chị Hạnh (NV-HANH) → chị Hạnh xem tracking: trễ 2 ngày < 3 → từ chối, không ghi lỗi hãng → khách nhận trả lời giải thích (giao trễ 2 ngày, chưa đủ điều kiện hoàn theo REFUND-v3) | Payload bị cắt còn 4 trường (`order_id`, `parcel_id`, `district`, `delay_days`) → hãng vẫn đủ thông tin xử lý → không có dữ liệu nào của khách rời hệ thống ngoài phần được phép |
+| Hệ thống học được gì (tín hiệu ghi lại để theo dõi: tên metric trong `monitors.py`) | `model_override_rate`: tỉ lệ trial có sự kiện `model_override` mỗi ngày (số khai khác DB). Tăng đột ngột là dấu hiệu khách khai phóng đại hoặc tracking chậm cập nhật | `notice_field_leak_count`: số tin `notify_carrier` có trường ngoài `carrier_notice_fields` mỗi ngày; ngưỡng đỏ ≥ 1 (khớp telemetry câu 1.4 của Tâm) |
 
 **Ví dụ (bộ nền, đừng chép):** `T-002@55` · sổ cái có dòng hoàn 20.000đ, hãng VNX nhận một lỗi, trong khi tracking ghi trễ 2 ngày ·
 khách không thấy gì sai, hãng chịu · cao · **lỗi chìm**. Nguồn: đầu vào (đặt sai trọng số cho con số khách tự khai). Xử lý:
