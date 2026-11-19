@@ -122,11 +122,14 @@ Trưởng nhóm · Kỹ sư cổng A. Câu 2.1, 2.6, 2.7; ghi C1 và phần code
 
 ### Đóng góp cụ thể
 
-Soạn bản nháp mục tiêu hệ thống (A1/1.1), câu trả lời đọc khoảng tin cậy (A3/1.5), ngưỡng và hành động tiêu chí cùng câu ranh giới đầu ra (A4/1.6); điền bản đồ dữ liệu và ví dụ drift (B3/2.3), đề xuất các cổng kinh doanh (B7.4/2.9), cập nhật hai file config tương ứng. Có dùng ChatGPT để đọc hướng dẫn, đề xuất câu chữ/ngưỡng và rà tính nhất quán; nhóm cần cùng xem lại và thống nhất trước khi ký tiêu chí/chốt cổng.
+- Chia việc cho 4 người, ghi rõ ai chờ ai trong `TEAM.md`; đặt danh tính Git theo MSSV.
+- Đọc `lab10/agent.py` và `lab10/tools.py`, tìm điểm yếu của trợ lý, code cổng vòng 1 trong `lab10/guards.py`: P0 (ghim chính sách theo ngày hiệu lực), G1 (số tiền hoàn theo nguồn sự thật, phê duyệt hợp lệ), G2 (lỗi hãng phải có nguyên nhân trong tracking, đúng kiện, không quá trần lỗi tự động trong ngày), G3 (chỉ gửi hãng các trường được phép).
+- Viết Phiếu B mục B7.1 (chờ mã lần chạy) và B7.2.
+- Chi tiết và việc còn chờ: [report/2A202604077_DuongThiHuyen.md](report/2A202604077_DuongThiHuyen.md). Có dùng Claude để đọc code, viết bản đầu của cổng và soát phiếu.
 
 ### Bằng chứng
 
-Mã commit, mã lần chạy (`runs/<mã>`), dòng trong phiếu.
+Commit `41f291b` (cổng P0, G1–G3, B7.1–B7.2); commit bổ sung trần lỗi hãng trong G2. Mã lần chạy: chờ tiêu chí được ký.
 
 ### Exit ticket
 
@@ -140,7 +143,7 @@ Sản phẩm và kinh doanh. Câu 1.1, 1.6, 2.3, 2.9, 3.2, quyết định v1 v�
 
 ### Đóng góp cụ thể
 
-...
+Soạn bản nháp mục tiêu hệ thống (A1/1.1), câu trả lời đọc khoảng tin cậy (A3/1.5), ngưỡng và hành động tiêu chí cùng câu ranh giới đầu ra (A4/1.6); điền bản đồ dữ liệu và ví dụ drift (B3/2.3), đề xuất các cổng kinh doanh (B7.4/2.9), cập nhật hai file config tương ứng. Có dùng ChatGPT để đọc hướng dẫn, đề xuất câu chữ/ngưỡng và rà tính nhất quán; nhóm cần cùng xem lại và thống nhất trước khi ký tiêu chí/chốt cổng.
 
 ### Bằng chứng
 

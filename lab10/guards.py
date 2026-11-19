@@ -120,6 +120,13 @@ def write_gate(ctx, action):
             return Verdict.deny("G2: tracking không ghi nguyên nhân thuộc lỗi hãng, không ghi oan cho hãng")
         want = {"parcel_id": parcel["parcel_id"], "carrier_id": parcel["carrier_id"],
                 "driver_id": parcel.get("driver_id"), "delay_days": delay}
+        # trần Ops/Finance: từ lỗi thứ (max + 1) của cùng một hãng trong ngày phải có người duyệt, không ghi tự động
+        max_strikes = ctx.tools.ops_limits().get("max_auto_strikes_per_carrier_per_day")
+        today = len(ctx.tools.fault_rows(carrier_id=parcel["carrier_id"]))
+        if max_strikes is not None and today >= max_strikes:
+            ctx.log("g2_strike_limit", carrier_id=parcel["carrier_id"], strikes_today=today, limit=max_strikes,
+                    order_id=order["order_id"], parcel_id=parcel["parcel_id"])
+            return Verdict.deny("G2: hãng đã chạm trần lỗi tự động trong ngày, lỗi này chờ người duyệt")
         changes = {k: v for k, v in want.items() if action.get(k) != v}
         if changes:
             ctx.log("g2_fault_corrected", order_id=order["order_id"], changes=changes)
