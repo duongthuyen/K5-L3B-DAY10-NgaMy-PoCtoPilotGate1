@@ -5,3 +5,5 @@
 config/acceptance_criteria.json text eol=crlf
 lab10/guards_round1.py text eol=crlf
 config/operating_gates.round1.json text eol=crlf
+# submission/ do lệnh 7 gom và hash từng byte (manifest.json): lưu nguyên byte, không đổi kiểu xuống dòng.
+submission/** -text
