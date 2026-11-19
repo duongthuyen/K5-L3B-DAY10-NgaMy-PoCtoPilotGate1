@@ -119,6 +119,28 @@ def refund_vnd_per_trial(trials):
     return _rate(sum(int(r.get("amount_vnd") or 0) for t in trials for r in t.get("ledger") or []), len(trials))
 
 
+def non_logix_payer_rate(trials):
+    """Shop / đối soát · bước hoàn tiền (thẻ S2): tỉ lệ dòng sổ cái mà người trả KHÔNG phải LogiX
+    (`payer` ≠ LOGIX, tức trừ tiền shop). Mẫu số: số dòng sổ cái. Giao trễ thì LogiX chịu, nên mọi dòng
+    trừ shop đều đáng soát; chị Oanh thấy được ngay trong ngày thay vì đợi bảng đối soát tuần."""
+    rows = [r for t in trials for r in t.get("ledger") or []]
+    return _rate(sum(str(r.get("payer") or "LOGIX").upper() != "LOGIX" for r in rows), len(rows))
+
+
+def customer_day_auto_refund_max_vnd(trials):
+    """Kinh doanh · trần theo khách (thẻ S2): tổng tiền hoàn TỰ ĐỘNG (dòng sổ cái không có `approval_id`)
+    lớn nhất của MỘT khách trong MỘT ngày vận hành (đ). So với `ops_limits.max_auto_refund_per_customer_per_day_vnd`
+    (300.000đ): vượt trần nghĩa là có khoản lẽ ra phải chờ người duyệt. Nhóm theo (ngày, seed, khách)."""
+    totals = {}
+    for t in trials:
+        for r in t.get("ledger") or []:
+            if r.get("approval_id"):
+                continue
+            key = (t.get("day"), t.get("seed"), r.get("customer_id") or (t.get("ticket") or {}).get("customer_id"))
+            totals[key] = totals.get(key, 0) + int(r.get("amount_vnd") or 0)
+    return max(totals.values(), default=0)
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
     "model_override_rate": model_override_rate,
@@ -128,5 +150,7 @@ MONITORS = {
     "llm_fail_open_rate": llm_fail_open_rate,
     "reply_ledger_mismatch_rate": reply_ledger_mismatch_rate,
     "refund_vnd_per_trial": refund_vnd_per_trial,
+    "non_logix_payer_rate": non_logix_payer_rate,
+    "customer_day_auto_refund_max_vnd": customer_day_auto_refund_max_vnd,
 }
 STARTER_MONITORS = ("escalation_rate",)

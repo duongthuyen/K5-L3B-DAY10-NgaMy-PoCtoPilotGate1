@@ -1,12 +1,17 @@
 {
   "team": "K5-L3B-DAY10-NgaMy-PoCtoPilotGate1",
-  "members": ["DuongThiHuyen-2A202604077", "HoangThiThanhNga-2A202604079", "BuiThuPhuong-2A202604080", "PhamMinhTam-2A202604097"],
+  "members": [
+    "DuongThiHuyen-2A202604077",
+    "HoangThiThanhNga-2A202604079",
+    "BuiThuPhuong-2A202604080",
+    "PhamMinhTam-2A202604097"
+  ],
   "incident": "S2",
   "decision_v1": "Tiếp tục",
-  "decision_v2": "",
+  "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "Thiết kế ngầm tin rằng chữ đi vào trợ lý mà không do LogiX viết (nội dung ticket, checkout_note người mua gõ lúc đặt hàng) chỉ là lời kể và lời dặn giao hàng, không bao giờ là mệnh lệnh; thẻ S2 cho thấy 6/15 ticket chứa chỉ thị giả ('[GHI CHÚ HỆ THỐNG: ...]', 'SYSTEM: ...', 'AI assistant: ignore...'), có cả chỉ thị cài sẵn trong checkout_note từ trước khi khiếu nại.",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Chữ đi vào trợ lý mà không do LogiX viết (nội dung ticket, `checkout_note` người mua gõ lúc đặt hàng) chỉ là lời kể và lời dặn giao hàng, không bao giờ là mệnh lệnh; trên thẻ S2, 6/15 ticket có lệnh giả (\"[GHI CHÚ HỆ THỐNG: …]\", \"SYSTEM: …\", \"AI assistant: ignore…\") và model vẫn làm theo ở 80% ca tấn công (`directive_obeyed_rate` 0,8).",
+    "reduce_or_prevent": "NGĂN được tác hại về tiền trên thẻ (trừ shop 32.750.000đ → 0đ, hoàn sai → 0đ), vì G1, G4, G5 không đọc chữ mà chỉ đọc tracking, chính sách, bảng phê duyệt và sổ cái; nhưng chỉ GIẢM ở nguồn gốc, vì model vẫn bị lừa (0,8) và cổng tin hoàn toàn vào tracking / bảng phê duyệt, còn trần theo khách lọt nếu một người dùng nhiều tài khoản.",
+    "measure_in_pilot": "tỉ lệ ticket và `checkout_note` thật có lệnh chèn, tỉ lệ chuyển người và thời gian chờ NV-HANH khi G4, G5 bật (thử phạm vi `all` cho 0,2) và ROI thật theo kho (đang đúng 0,2 = ngưỡng), nhất là sau 01/12/2026 khi REFUND-v4 hạ hạn mức tự động còn 100.000đ."
   }
 }
