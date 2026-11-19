@@ -122,8 +122,6 @@ Lưu ý cho Nga và Tâm: G1 không thay `daily_refund_cap_vnd` (trần đó do 
 
 ## 9. Exit ticket
 
-*(Bản nháp theo việc đã làm; Huyền sửa lại bằng lời của mình trước khi nộp.)*
-
 - Một điều học được: cổng đặt ngoài model, đọc nguồn sự thật (tracking, chính sách theo ngày, sổ cái) thay vì chữ khách viết, chặn được cả những kiểu tấn công chưa biết trước: cổng G1 vòng 1 đã đưa tiền trừ shop của thẻ S2 từ 32.750.000đ về 0đ trước khi bàn biết thẻ. Ngoài ra, một con số trong config như phạm vi pilot có thể làm report đẹp mà vẫn che lỗ hổng: phải chạy thử phạm vi `all` mới thấy `S2-04`, `S2-43`, `S2-44`.
 - Một điều còn chưa chắc: G5 đọc `ctx.tools._w.seed_rows` (thuộc tính nội bộ) để biết dòng sổ nào là của hôm nay; bài kiểm tra ẩn có giữ đúng cấu trúc đó không. Và ROI trên thẻ đúng bằng ngưỡng 0,2, nên chỉ cần chi phí thật nhích lên là quyết định "Tiếp tục" không còn đứng được.
 

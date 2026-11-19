@@ -134,7 +134,7 @@ Commit `41f291b` (cổng P0, G1–G3, B7.1–B7.2), `a4311b1` (trần lỗi hãn
 
 ### Exit ticket
 
-*(Bản nháp, Huyền sửa lại bằng lời của mình.)* Học được: cổng ngoài model đọc nguồn sự thật chặn được cả kiểu tấn công chưa biết trước (G1 vòng 1 đã đưa tiền trừ shop của S2 từ 32.750.000đ về 0đ), và phạm vi pilot có thể làm report đẹp mà vẫn che lỗ hổng. Chưa chắc: G5 dựa vào `seed_rows` nội bộ để tách sổ cái hôm nay; ROI trên thẻ đúng bằng ngưỡng 0,2 nên "Tiếp tục" rất mỏng.
+Học được: cổng ngoài model đọc nguồn sự thật chặn được cả kiểu tấn công chưa biết trước (G1 vòng 1 đã đưa tiền trừ shop của S2 từ 32.750.000đ về 0đ), và phạm vi pilot có thể làm report đẹp mà vẫn che lỗ hổng. Chưa chắc: G5 dựa vào `seed_rows` nội bộ để tách sổ cái hôm nay; ROI trên thẻ đúng bằng ngưỡng 0,2 nên "Tiếp tục" rất mỏng.
 
 ## HoangThiThanhNga-2A202604079
 
