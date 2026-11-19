@@ -437,18 +437,18 @@ bao nhiêu thời gian? (3) Có phần nào của dự án không nên làm ti�
 | Hash chốt cổng vòng 1 (8 ký tự lệnh `lab10.checkpoint` in ra, tuỳ chọn) | `cccf2852` |
 | Mã lần chạy dùng làm bằng chứng | bộ nền, mốc base: `R-base-before-20261119-151942-c7dc97` · bộ nền với cổng vòng 1 (prepared): `R-base-prepared-20261119-154502-219163` |
 | Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | Không. `vượt trần: không`; hàng chờ 4 ca/ngày, chờ lâu nhất 0 phút, 0 ca ùn (hạn 60 phút); chi phí 5.550đ/ticket < 10.000đ; ROI 0,8 ≥ 0,2; tổng hoàn tự động 155.000đ/ngày < trần 2.000.000đ; lộ dữ liệu 0, lỗi hãng oan 0 |
-| Kho hoặc hãng có số xấu nhất: ____. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? *(Đọc khối "theo kho và hãng" ở cuối output `lab10.eval` / `lab10.grade`, hoặc mục `by_segment` trong `report.json`.)* | Ở mốc prepared mọi kho/hãng đều pass_rate 1,0, không hoàn sai, không lỗi oan. Phân khúc xấu nhất là nhóm **kho `?`** (5 lần chạy, ticket không gắn được đơn): **10.359đ/ticket, cao hơn làm tay**; trong pilot, **HCM** đắt hơn HN (3.447đ so với 2.079đ/ticket). Ở mốc base, phân khúc xấu nhất là **HCM / VNX** (`T-002@55`). _(Nga điền phần "quyết định có đổi không")_ |
-| Quyết định (khoanh một) | Tiếp tục · Thu hẹp · Cải tiến thêm · Dừng |
-| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | |
-| Bằng chứng 2 | |
-| Bằng chứng 3 | |
-| Khớp dòng nào trong `decision_rule` đã ký? | |
-| Nếu Thu hẹp: cắt phần nào, vì sao | |
-| Nếu Cải tiến thêm: giả thuyết cụ thể + hạn | |
-| Nếu Dừng: bài học ghi lại | |
-| Một bằng chứng còn thiếu (thứ bộ nền chưa đo được) | |
-| Ngày quyết định lại (trừ khi Dừng) | |
-| PIC ký | |
+| Kho hoặc hãng có số xấu nhất: ____. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? *(Đọc khối "theo kho và hãng" ở cuối output `lab10.eval` / `lab10.grade`, hoặc mục `by_segment` trong `report.json`.)* | Ở mốc prepared mọi kho/hãng đều pass_rate 1,0, không hoàn sai, không lỗi oan. Phân khúc xấu nhất là nhóm **kho `?`** (5 lần chạy, ticket không gắn được đơn): **10.359đ/ticket, cao hơn làm tay**; trong pilot, **HCM** đắt hơn HN (3.447đ so với 2.079đ/ticket). Ở mốc base, phân khúc xấu nhất là **HCM / VNX** (`T-002@55`). Quyết định không đổi trong phạm vi pilot HN + HCM; ticket không xác định được kho được xử lý thủ công, chưa mở rộng phạm vi. |
+| Quyết định (khoanh một) | **Tiếp tục** · Thu hẹp · Cải tiến thêm · Dừng — cả bàn xác nhận pilot có giám sát, chỉ ở HN + HCM. |
+| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | `R-base-prepared-20261119-154502-219163`: pass_rate 1,0 [1,0; 1,0], pass_k 1,0; hoàn sai 0đ, lỗi hãng oan 0, lộ PII 0; `lab10.gate`: mọi ngưỡng đã ký `[ĐẠT]`. |
+| Bằng chứng 2 | Cùng mã prepared: 4 ca/ngày vào hàng chờ, chờ lâu nhất 0 phút, 0 ca ùn; chi phí 5.550đ/ticket ≤ 10.000đ; ROI 0,8 ≥ 0,2; hoàn tự động 155.000đ/ngày ≤ trần 2.000.000đ/ngày. |
+| Bằng chứng 3 | Phạm vi HN + HCM: HN 2.079đ/ticket, HCM 3.447đ/ticket, đều dưới mức làm tay 10.000đ. Nhóm kho `?` là 10.359đ/ticket nhưng không xác định được kho nên xử lý thủ công, không mở rộng pilot để bao gồm nhóm này. |
+| Khớp dòng nào trong `decision_rule` đã ký? | **Tiếp tục** trong phạm vi pilot có giám sát đã đặt; các ngưỡng bắt buộc và trần kinh doanh/vận hành trên bộ nền đều đạt. Đây là v1 trước thẻ sự cố; phải đánh giá lại ở v2 sau khi kiểm tra incident. |
+| Nếu Thu hẹp: cắt phần nào, vì sao | Không áp dụng. |
+| Nếu Cải tiến thêm: giả thuyết cụ thể + hạn | Không áp dụng; theo dõi nhóm ticket không xác định được kho bằng quy trình thủ công. |
+| Nếu Dừng: bài học ghi lại | Không áp dụng. |
+| Một bằng chứng còn thiếu (thứ bộ nền chưa đo được) | Gói sự cố và hành vi người dùng thật; v1 chỉ dựa trên bộ nền tất định, chưa đủ kết luận cho phạm vi pilot cuối cùng. |
+| Ngày quyết định lại (trừ khi Dừng) | Sau khi đánh giá thẻ sự cố ở v2 và trước khi mở rộng khỏi HN + HCM. |
+| PIC ký | Hoàng Thị Thanh Nga (2A202604079), đại diện ghi quyết định v1 đã được cả bàn xác nhận. |
 
 Xong v1 thì lưu và đẩy một bản (sau mốc này không sửa cột v1):
 
