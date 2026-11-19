@@ -138,6 +138,8 @@ Học được: cổng ngoài model đọc nguồn sự thật chặn được c
 
 ## HoangThiThanhNga-2A202604079
 
+Báo cáo cá nhân: [Hoàng Thị Thanh Nga · 2A202604079](report/2A202604079_HoangThiThanhNga.md).
+
 ### Phần việc phụ trách
 
 Sản phẩm và kinh doanh. Câu 1.1, 1.6, 2.3, 2.9, 3.2, quyết định v1 và v2. Phiếu A mục A1 (1.1), A3 (ghi), A4, A5; Phiếu B mục B3, B7.4, B8; Phiếu C mục C5 (3.2), C7 (dòng business), C12. File: `config/acceptance_criteria.json`, `config/operating_gates.json` mục `business`.
