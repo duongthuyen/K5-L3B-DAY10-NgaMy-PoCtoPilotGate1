@@ -129,7 +129,7 @@ Trưởng nhóm · Kỹ sư cổng A. Câu 2.1, 2.6, 2.7; ghi C1 và phần code
 
 ### Bằng chứng
 
-Commit `41f291b` (cổng P0, G1–G3, B7.1–B7.2), `a4311b1` (trần lỗi hãng trong G2). Mã lần chạy: `R-base-before-20261119-151942-c7dc97` (base, Phiếu B B0 dòng 1, B1), `R-base-after-20261119-151947-c7dc97` (cổng vòng 1, B0 dòng 2, B7.1).
+Commit `41f291b` (cổng P0, G1–G3, B7.1–B7.2), `a4311b1` (trần lỗi hãng trong G2). Mã lần chạy: `R-base-before-20261119-151942-c7dc97` (base, Phiếu B B0 dòng 1, B1), `R-base-after-20261119-151947-c7dc97` (cổng vòng 1, B0 dòng 2, B7.1), `R-base-after-20261119-154455-219163` (B0 dòng 4), `R-base-prepared-20261119-154502-219163` (B0 dòng 3, B8). Chốt cổng vòng 1: `cccf2852`.
 
 ### Exit ticket
 

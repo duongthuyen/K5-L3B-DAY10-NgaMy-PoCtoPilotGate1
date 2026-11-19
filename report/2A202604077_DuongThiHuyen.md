@@ -43,8 +43,9 @@ Vì `runs/` không lên git, mọi lần chạy `eval`, `gate`, `checkpoint`, `g
 - [x] **Ký tiêu chí:** commit `ffb7bc8` lúc 15:13, `criteria verify` → `ok: true`, hash `416b7554`, ký lúc 15:12:09. Lần đánh giá đầu tiên của mình lúc 15:19:42, **sau** khi ký và push.
 - [x] **65–71:** `python -m lab10.eval --suite base --stage base --note "baseline"` → `R-base-before-20261119-151942-c7dc97`; `python -m lab10.gate` → `[CHƯA]` hoàn sai và lỗi hãng oan; điền B0 dòng 1, B1.
 - [x] **85–100:** `python -m lab10.eval --suite base --stage after` → `R-base-after-20261119-151947-c7dc97`; trace `T-002@55 --stage after` → G1 chặn (`g1_refund_blocked`), kết quả ĐẠT; 13/13 test OK; điền B0 dòng 2, mã lần chạy trong B7.1.
-- [ ] **Đang chờ để chốt (lệnh 5):** Tâm điền `operations` + `legal` (hiện `pic`, `approver_id`, `stop_conditions`, `alert_channel` còn trống; `pii_fields_blocked_to_third_party` trống); Phương xong B7.3 (2 ticket hiểm); cả bàn chốt B6 để đối chiếu cổng.
-- [ ] **105–115:** `python -m lab10.checkpoint` → `python -m lab10.eval --suite base --stage prepared` → `python -m lab10.gate --run runs/<mã>/report.json`; commit và push.
+- [x] **Ráp bài (15:44):** pull B7.3 (Phương, 2 ticket hiểm giữ được tính chất), `monitors.py` (Phương, 7 chỉ số), `operations` + `legal` + runbook (Tâm). Chạy `after` với config mới → `R-base-after-20261119-154455-219163`, không ca nào hỏng.
+- [x] **105–115:** `python -m lab10.checkpoint` → `ĐÃ CHỐT … cccf2852`; `eval --stage prepared` → `R-base-prepared-20261119-154502-219163`; `gate` → mọi ngưỡng `[ĐẠT ]`. Điền B0 dòng 3–4 và các ô dữ kiện ở B8; commit và push `guards_round1.py`, `operating_gates.round1.json`, `round1.lock`.
+- [ ] **Chờ Nga:** viết cột v1 ở B8 (quyết định, ba bằng chứng, dòng `decision_rule`, ngày quyết định lại). **Chờ cả bàn:** B6 pre-mortem vẫn trống (Tâm ghi), nhớ map 2–3 lý do vào P0/G1/G2/G3 ở B7.1.
 - [ ] **125–135:** kéo thẻ (`git fetch …cards.git main`, `git checkout FETCH_HEAD -- incidents/Sx`, `git commit -m "Nhận thẻ Sx"`), `python -m lab10.grade --incident Sx`, push; điền C0; ghi C1.
 - [ ] **155–185:** sửa `guards.py` → `python -m lab10.eval --suite Sx --stage after --note "đổi MỘT thứ: ..."` → `python -m lab10.eval --suite base --stage after --note "kiểm lại bộ nền sau khi sửa"` → `python -m lab10.grade --incident Sx`; điền C7 dòng code.
 - [ ] **190–200:** `python -m lab10.check_submission --collect` tới khi `ĐỦ THÀNH PHẦN`; push.
@@ -88,7 +89,8 @@ Lưu ý cho Nga và Tâm: G1 không thay `daily_refund_cap_vnd` (trần đó do 
 | `R-base-before-20261119-151942-c7dc97` | base · base | baseline | pass_rate 0,9909 [0,9727; 1,0], pass_k 0,9545; `[CHƯA]` hoàn sai 20.000đ và 1 lỗi hãng oan, cả hai từ `T-002@55` (kho HCM, hãng VNX); mọi ngưỡng `business_ops` đạt (4.203đ/ticket, ROI 1,34, 0 ca ùn) |
 | `R-base-after-20261119-151947-c7dc97` | base · after | cổng P0 + G1–G3 (config đã có `business` của Nga) | pass_rate 1,0, pass_k 1,0, hoàn sai 0, lỗi hãng oan 0, lộ dữ liệu 0, không ca nào hỏng; độ phủ 0,5909 và ROI 0,94 do phạm vi pilot HN + HCM |
 | _(trong tiến trình, không ghi journal)_ | base, phạm vi `all` | chỉ cổng | 110 lần chạy, pass_rate 1,0, hoàn sai 0, lỗi hãng oan 0, tỉ lệ chuyển người 0,2273 (bằng baseline) → cổng không tăng việc cho người duyệt |
-| | base · prepared | chốt vòng 1 | |
+| `R-base-after-20261119-154455-219163` | base · after | thêm `operations` + `legal` của Tâm, cổng giữ nguyên | pass_rate 1,0; an toàn 0 · 0 · 0; kiểm mẫu 10% → hàng chờ 4 ca/ngày, chi phí 5.550đ/ticket, ROI 0,8 |
+| `R-base-prepared-20261119-154502-219163` | base · prepared | chốt vòng 1 (`cccf2852`) | `lab10.gate`: **mọi ngưỡng đã ký đều `[ĐẠT ]`**; không vượt trần |
 | | Sx · prepared (lệnh 6) | chưa sửa | |
 | | Sx · after | | |
 | | base · after | kiểm lại bộ nền | |

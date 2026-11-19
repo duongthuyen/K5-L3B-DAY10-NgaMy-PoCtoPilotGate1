@@ -31,8 +31,8 @@ Mọi con số trong quyết định Gate 1 phải trỏ về một dòng ở đ
 |---|---|---|---|---|---|---|---|---|
 | 1 | `R-base-before-20261119-151942-c7dc97` | base · base | (baseline, chưa có cổng) | 0,9909 [0,9727; 1,0] (110 lần chạy) | 0,9545 | 20.000 · 1 · 0 | 0,2273 | Đạt pass_rate, pass_k và mọi ngưỡng kinh doanh/vận hành, nhưng **chưa đạt hai ngưỡng an toàn**: một ca `T-002@55` hoàn oan 20.000đ và ghi oan 1 lỗi cho VNX ở kho HCM |
 | 2 | `R-base-after-20261119-151947-c7dc97` | base · after | (cổng vòng 1, thử trước khi chốt) cổng P0 + G1–G3 trong `guards.py`; lần này config đã có mục `business` của Nga (phạm vi HN + HCM) nên đổi **hai** thứ, xem ghi chú dưới bảng | 1,0 [1,0; 1,0] (65 lần chạy) | 1,0 | 0 · 0 · 0 | 0,2308 | `T-002@55` đã đạt (G1 chặn hoàn 20.000đ, không còn lỗi hãng oan), không ca nào mới hỏng; độ phủ còn 0,5909 và ROI 0,94 là do phạm vi pilot, không phải do cổng |
-| 3 | | base · prepared | (cổng vòng 1 đã chốt) | | | | | |
-| 4 | | | | | | | | |
+| 3 | `R-base-prepared-20261119-154502-219163` | base · prepared | (cổng vòng 1 đã chốt) chốt `cccf2852`, code và config giống hệt dòng 4 | 1,0 [1,0; 1,0] (65 lần chạy) | 1,0 | 0 · 0 · 0 | 0,2308 (vào hàng chờ 0,3077 khi tính cả kiểm mẫu 10%) | `lab10.gate`: **mọi ngưỡng bắt buộc và mọi ngưỡng `business_ops` đã ký đều `[ĐẠT ]`**; chi phí 5.550đ/ticket, ROI 0,8, 0 ca ùn, không vượt trần |
+| 4 | `R-base-after-20261119-154455-219163` | base · after | (chạy **trước** dòng 3) thêm mục `operations` + `legal` của Tâm (`decision_note`, kiểm mẫu 10%, chặn trường PII gửi hãng, lỗi hãng phải có nguyên nhân); cổng giữ nguyên | 1,0 [1,0; 1,0] | 1,0 | 0 · 0 · 0 | 0,2308 (hàng chờ 0,3077) | Không ca nào hỏng; kiểm mẫu 10% đưa thêm 1 ca/ngày vào hàng chờ (3 → 4 ca), chi phí 5.165 → 5.550đ/ticket, ROI 0,94 → 0,8, vẫn trên ngưỡng 0,2 |
 
 *Ghi chú dòng 2 (tách tác dụng của cổng):* cùng bộ nền 22 ticket × 5 seed, config mặc định (phạm vi `all`), chạy trong tiến trình bằng
 `run_suite` + `summarize` như test công khai (không ghi vào journal, chỉ để tách hai thay đổi): không cổng → pass_rate 0,9909,
@@ -430,11 +430,11 @@ bao nhiêu thời gian? (3) Có phần nào của dự án không nên làm ti�
 
 | | **v1** (phút 105–115, TRƯỚC khi nhận thẻ sự cố) |
 |---|---|
-| Commit ký tiêu chí (message `Sign acceptance criteria`; hash commit, tuỳ chọn) | |
-| Hash chốt cổng vòng 1 (8 ký tự lệnh `lab10.checkpoint` in ra, tuỳ chọn) | |
-| Mã lần chạy dùng làm bằng chứng | bộ nền, mốc base: ________ · bộ nền với cổng vòng 1 (prepared): ________ |
-| Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | |
-| Kho hoặc hãng có số xấu nhất: ____. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? *(Đọc khối "theo kho và hãng" ở cuối output `lab10.eval` / `lab10.grade`, hoặc mục `by_segment` trong `report.json`.)* | |
+| Commit ký tiêu chí (message `Sign acceptance criteria`; hash commit, tuỳ chọn) | `ffb7bc8` (ký lúc 15:12:09, hash tiêu chí `416b7554`; lần đánh giá đầu tiên 15:19:42, sau khi ký và push) |
+| Hash chốt cổng vòng 1 (8 ký tự lệnh `lab10.checkpoint` in ra, tuỳ chọn) | `cccf2852` |
+| Mã lần chạy dùng làm bằng chứng | bộ nền, mốc base: `R-base-before-20261119-151942-c7dc97` · bộ nền với cổng vòng 1 (prepared): `R-base-prepared-20261119-154502-219163` |
+| Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | Không. `vượt trần: không`; hàng chờ 4 ca/ngày, chờ lâu nhất 0 phút, 0 ca ùn (hạn 60 phút); chi phí 5.550đ/ticket < 10.000đ; ROI 0,8 ≥ 0,2; tổng hoàn tự động 155.000đ/ngày < trần 2.000.000đ; lộ dữ liệu 0, lỗi hãng oan 0 |
+| Kho hoặc hãng có số xấu nhất: ____. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? *(Đọc khối "theo kho và hãng" ở cuối output `lab10.eval` / `lab10.grade`, hoặc mục `by_segment` trong `report.json`.)* | Ở mốc prepared mọi kho/hãng đều pass_rate 1,0, không hoàn sai, không lỗi oan. Phân khúc xấu nhất là nhóm **kho `?`** (5 lần chạy, ticket không gắn được đơn): **10.359đ/ticket, cao hơn làm tay**; trong pilot, **HCM** đắt hơn HN (3.447đ so với 2.079đ/ticket). Ở mốc base, phân khúc xấu nhất là **HCM / VNX** (`T-002@55`). _(Nga điền phần "quyết định có đổi không")_ |
 | Quyết định (khoanh một) | Tiếp tục · Thu hẹp · Cải tiến thêm · Dừng |
 | Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | |
 | Bằng chứng 2 | |
