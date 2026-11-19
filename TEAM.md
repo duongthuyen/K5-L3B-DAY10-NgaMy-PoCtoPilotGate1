@@ -191,12 +191,27 @@ Vận hành và pháp lý. Câu 1.2, 1.4, 2.4, 2.10, 3.1 (phần riêng theo th�
 
 ### Đóng góp cụ thể
 
-...
+- **Chọn căn cứ chung cho bàn:** đề xuất dùng PRD v1.1 và eval card Lab 9 của em làm bản chung; ghi link ở đầu `TEAM.md` và Phiếu A để mọi trích dẫn "PRD v1.1 §x" trỏ về một chỗ.
+- **Câu 1.2 · Phiếu A mục A1:** mục tiêu nhìn từ chị Oanh (NV-OANH): mọi dòng trợ lý ghi sổ phải tự khớp khi đối soát tuần (đúng `payer`, đúng REFUND-v3, có `approval_id` khi vượt 200.000đ, không ghi oan cho hãng, số báo khách bằng số trong sổ). Mục tiêu nhìn từ chị Hạnh (NV-HANH): ca chuyển sang phải là ca thật sự cần người, kèm ghi chú, vừa sức 1 người × 6 ca/giờ trong SLA 60 phút. Dẫn PRD v1.1 §2, §6 và `world.json` → `staff`, `ops_limits`, `ops_facts`.
+- **Câu 1.4 · Phiếu A mục A2 (cột Telemetry production):** thước đo "số lần ghi lỗi cho hãng không có căn cứ, lần/hãng/ngày" (kiện không có `delay_cause = CARRIER` trong tracking), cùng hai tín hiệu phụ: strike tự động/hãng/7 ngày so với ngưỡng đình chỉ, và số tin gửi hãng có trường ngoài `carrier_notice_fields`. Không có nhãn nên dùng đối chiếu tracking và khiếu nại của hãng thay nhãn; đặt ngưỡng đỏ (tắt `file_carrier_fault`, báo NV-TUNG) và vàng (NV-HANH duyệt tay). Cùng bước với offline metric câu 1.3 của Phương.
+- **Câu 2.4 · Phiếu B mục B4 (HAZOP):** HAZOP trên `file_carrier_fault` đủ 5 guideword, tìm từ đọc `agent.py`: ghi lỗi lên kiện đầu tiên thay vì kiện trễ (WRONG), chọn chính sách theo cờ `index_active` thay vì ngày hiệu lực (INVALID), tracking trống thì mặc định đổ lỗi cho hãng (INCOMPLETE), ticket lặp thành strike lặp (PERTURBED), LLM lỗi 429 thì `fail_open` ghi lỗi hãng cho mọi đơn (INCAPABLE, nhánh chưa thấy trên trace). Thêm 3 dòng ngoài kỹ thuật: người duyệt quá tải giờ cao điểm, lộ số điện thoại người nhận quà cho hãng, phạm vi pilot. Sau khi ký, kiểm chứng bằng trace `T-013@11`, `T-006@11` và quét 110 lần chạy bộ nền (0 lần LLM lỗi).
+- **Câu 2.4 · Phiếu B mục B5 (checklist 9 nhóm):** điền cả 9 dòng, mỗi dòng một PIC có tên; cập nhật trạng thái và bằng chứng theo mã lần chạy sau v1.
+- **Câu 2.5 · Phiếu B mục B6:** người ghi pre-mortem bốn lăng kính (6 lý do, 3 lý do thành cổng ★ khớp G1, `business`, G2 ở B7.1).
+- **Câu 2.10 · `config/operating_gates.json` mục `operations`, `legal` + Phiếu B mục B7.5, B7.6:** `pic = NV-TUNG`, `approver_id = NV-HANH`, 1 người × 6 ca/giờ, chờ tối đa 60 phút, `decision_note = true`, kiểm mẫu 10% (đúng điều kiện tin tưởng trong `staff_behavior.trust_conditions`), 7 điều kiện dừng, kênh báo tin; bật `carrier_fault_requires_recorded_cause` và chặn `recipient_contact`, `customer_note` gửi hãng. Thử trước trong tiến trình để chọn số (1 người ROI 0,8; 2 người ROI 0,27), rồi đối chiếu với lần chạy chính thức của Huyền. Viết runbook phần 1–3 (ai làm gì, 7 tín hiệu vàng/đỏ, các bước dừng trong 15 phút, điều kiện bật lại) và mục Giờ cao điểm.
+- **Vòng 2 (sau khi có thẻ):** C3, C4, C5 (câu 3.3), dòng ops/legal của C7, C9–C11 (fault tree sau sửa, risk register, checklist, runbook 4–5), `submission/submission.json`: *(bổ sung sau phút 125)*.
 
 ### Bằng chứng
 
-Mã commit, mã lần chạy (`runs/<mã>`), dòng trong phiếu.
+- Commit: `228c5fa` (A1 câu 1.2, chọn PRD chung) · `11d47d4` (A2 câu 1.4) · `d71e9cc`, `d253d28` (B4, B5 câu 2.4 và kiểm chứng bằng trace) · `9922fbc`, `4360892` (`operating_gates.json` mục `operations`, `legal`; B7.5, B7.6 câu 2.10) · `0f80818` (B6) · `5a6ca30` (soát Phiếu B, cập nhật B5 sau v1) · commit vòng 2 *(bổ sung sau)*.
+- Mã lần chạy (máy Huyền) có config của em: `R-base-after-20261119-154455-219163` (B0 dòng 4) và `R-base-prepared-20261119-154502-219163` (B0 dòng 3): hoàn sai 0, lỗi hãng oan 0, lộ dữ liệu 0, chờ lâu nhất 0 phút, 0 ca ùn, 5.550đ/ticket, ROI 0,8, `vượt trần: không`. Cổng vòng 1 chốt `cccf2852` gồm cả mục `operations`, `legal` này.
+- Trace chạy trên máy em (sau khi ký, không ghi journal): `trace --suite base --ticket T-013 --seed 11`, `--ticket T-006 --seed 11`.
+- Dòng trong phiếu: `templates/form-a-criteria.md` mục A1 (câu 1.2), A2 (cột Telemetry production); `templates/form-b-evaluation-gates.md` mục B4, B5, B6, B7.5, B7.6; `templates/form-c-incident.md` mục C3, C4, C5, C9–C11 *(vòng 2)*.
+
+### Dùng AI
+
+Dùng Claude (Claude Code) để: đọc `lab10/agent.py`, `lab10/tools.py`, `lab10/ops.py` và `data/world.json` để tìm dữ kiện cho HAZOP và runbook; soạn nháp câu trả lời câu 1.2, 1.4, 2.4, 2.5, 2.10; chạy trace và chạy thử cấu hình `operations` trong tiến trình (không ghi journal) để chọn con số; commit và push từng câu. Em đã đọc lại, hỏi lại từng câu (đề hỏi gì, số lấy từ đâu) và đối chiếu số với `world.json` và report chính thức của Huyền trước khi giữ lại. Bảng pre-mortem B6 là bản nháp để cả bàn sửa lại theo lời từng người; ngưỡng tiêu chí và quyết định v1/v2 là của cả bàn, không do AI chọn.
 
 ### Exit ticket
 
-Một điều học được, một điều còn chưa chắc.
+- **Một điều học được:** *(em tự viết lại bằng lời của mình)* Gợi ý: phần lớn rủi ro của trợ lý không nằm ở model mà ở con người và bên thứ ba: một con số trong config (1 người trực, kiểm mẫu 10%, bật cổng pháp lý) đổi ROI từ 0,94 xuống 0,8 nhưng giữ được lòng tin của người duyệt và bảo vệ hãng nhỏ khỏi bị đình chỉ oan.
+- **Một điều còn chưa chắc:** *(em tự viết lại bằng lời của mình)* Gợi ý: các ngưỡng giờ cao điểm (gọi người thứ hai khi ≥ 3 ca chờ, ≥ 12 ticket/giờ) là ước tính từ bộ nền 13 ticket/ngày; chưa có số đo thật khi tải dồn hoặc khi LLM lỗi 429, nên chưa chắc 1 người trực có đủ ngoài thực tế.
