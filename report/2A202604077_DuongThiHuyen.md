@@ -40,9 +40,10 @@ Vì `runs/` không lên git, mọi lần chạy `eval`, `gate`, `checkpoint`, `g
 - [x] **0–15:** `git config user.name "2A202604077"`, `git config user.email "2A202604077@example.com"` (README bước 2a); `python -m unittest discover -s tests` → `Ran 13 tests … OK`. _(Còn: tự kiểm tra trên GitHub rằng 3 bạn đã được mời quyền Write.)_
 - [x] **15–65:** đọc `lab10/guards.py`, `lab10/helpers.py`, `lab10/agent.py`, `lab10/tools.py`, `docs/guide.md` Phụ lục C; code sẵn P0, G1, G2, G3 (mục 4); viết B7.2. **Chưa chạy trợ lý.**
 - [x] **Ráp bài nhóm (15:00):** pull commit của Nga và Tâm, thêm trần lỗi hãng vào G2, sửa mục cá nhân bị ghi nhầm trong `TEAM.md`.
-- [ ] **Đang chờ:** Nga chạy `python -m lab10.criteria sign`, điền `signed_by`, push `config/acceptance_criteria.json` + `.lock`. Ngưỡng đã điền nhưng chưa ký, nên mọi bước dưới đây chưa làm được.
-- [ ] **65–71:** `git pull` → `python -m lab10.eval --suite base --stage base --note "baseline"` → `python -m lab10.gate --run runs/<mã>/report.json`; điền B0, B1.
-- [ ] **85–100:** code cổng → `python -m lab10.eval --suite base --stage after --note "cổng vòng 1: ..."` → `python -m unittest discover -s tests`; push bản đầu ~phút 95; điền B7.1, B7.2.
+- [x] **Ký tiêu chí:** commit `ffb7bc8` lúc 15:13, `criteria verify` → `ok: true`, hash `416b7554`, ký lúc 15:12:09. Lần đánh giá đầu tiên của mình lúc 15:19:42, **sau** khi ký và push.
+- [x] **65–71:** `python -m lab10.eval --suite base --stage base --note "baseline"` → `R-base-before-20261119-151942-c7dc97`; `python -m lab10.gate` → `[CHƯA]` hoàn sai và lỗi hãng oan; điền B0 dòng 1, B1.
+- [x] **85–100:** `python -m lab10.eval --suite base --stage after` → `R-base-after-20261119-151947-c7dc97`; trace `T-002@55 --stage after` → G1 chặn (`g1_refund_blocked`), kết quả ĐẠT; 13/13 test OK; điền B0 dòng 2, mã lần chạy trong B7.1.
+- [ ] **Đang chờ để chốt (lệnh 5):** Tâm điền `operations` + `legal` (hiện `pic`, `approver_id`, `stop_conditions`, `alert_channel` còn trống; `pii_fields_blocked_to_third_party` trống); Phương xong B7.3 (2 ticket hiểm); cả bàn chốt B6 để đối chiếu cổng.
 - [ ] **105–115:** `python -m lab10.checkpoint` → `python -m lab10.eval --suite base --stage prepared` → `python -m lab10.gate --run runs/<mã>/report.json`; commit và push.
 - [ ] **125–135:** kéo thẻ (`git fetch …cards.git main`, `git checkout FETCH_HEAD -- incidents/Sx`, `git commit -m "Nhận thẻ Sx"`), `python -m lab10.grade --incident Sx`, push; điền C0; ghi C1.
 - [ ] **155–185:** sửa `guards.py` → `python -m lab10.eval --suite Sx --stage after --note "đổi MỘT thứ: ..."` → `python -m lab10.eval --suite base --stage after --note "kiểm lại bộ nền sau khi sửa"` → `python -m lab10.grade --incident Sx`; điền C7 dòng code.
@@ -55,10 +56,10 @@ Mình viết cổng theo các điểm yếu đọc được trong `lab10/agent.p
 
 | # | Cổng | Hàm | Điểm yếu trong code trợ lý mà cổng chặn | Kết quả |
 |---|---|---|---|---|
-| P0 | Ghim chính sách theo ngày hiệu lực | `pre_guard` | Trợ lý chọn chính sách theo cờ `index_active`, không theo `effective_from/effective_to` | Unit test OK; mã lần chạy: _chờ ký_ |
-| G1 | Số tiền hoàn theo nguồn sự thật | `write_gate` · `issue_refund` | `model_override` (tin số ngày khách khai), `directive_obeyed` (chỉ thị chèn trong ticket hoặc `checkout_note` → hoàn toàn bộ, đổi `payer`), `fail_open` khi 429, `write_retry` ghi hoàn lần 2, lấy phê duyệt theo khách thay vì theo đơn | Unit test OK; mã lần chạy: _chờ ký_ |
-| G2 | Lỗi hãng phải có nguyên nhân trong tracking, không quá trần lỗi tự động trong ngày | `write_gate` · `file_carrier_fault` | Nguyên nhân trống thì mặc định `CARRIER`; ghi lên hãng của kiện đầu tiên (`parcels[0]`) thay vì kiện bị trễ; `delay_days` lấy từ số khách khai; không có trần số lỗi mỗi hãng mỗi ngày (`ops_limits.max_auto_strikes_per_carrier_per_day` = 2) | Unit test OK; mã lần chạy: _chờ ký_ |
-| G3 | Chỉ gửi hãng các trường được phép | `write_gate` · `notify_carrier` | Payload có `customer_note` (nguyên văn lời khách) và `recipient_contact` (tên, số điện thoại) khi đơn là quà tặng | Unit test OK; mã lần chạy: _chờ ký_ |
+| P0 | Ghim chính sách theo ngày hiệu lực | `pre_guard` | Trợ lý chọn chính sách theo cờ `index_active`, không theo `effective_from/effective_to` | `R-base-after-…-151947`: ghim REFUND-v3 (trùng bản trợ lý chọn ở bộ nền, nên chưa thấy tác dụng; để phòng drift REFUND-v4 ở B3) |
+| G1 | Số tiền hoàn theo nguồn sự thật | `write_gate` · `issue_refund` | `model_override` (tin số ngày khách khai), `directive_obeyed` (chỉ thị chèn trong ticket hoặc `checkout_note` → hoàn toàn bộ, đổi `payer`), `fail_open` khi 429, `write_retry` ghi hoàn lần 2, lấy phê duyệt theo khách thay vì theo đơn | `R-base-after-…-151947`: **đỡ `T-002@55`** (khách khai 5 ngày, tracking 2 ngày, entitled 0 → `deny`); hoàn sai 20.000đ → 0 |
+| G2 | Lỗi hãng phải có nguyên nhân trong tracking, không quá trần lỗi tự động trong ngày | `write_gate` · `file_carrier_fault` | Nguyên nhân trống thì mặc định `CARRIER`; ghi lên hãng của kiện đầu tiên (`parcels[0]`) thay vì kiện bị trễ; `delay_days` lấy từ số khách khai; không có trần số lỗi mỗi hãng mỗi ngày (`ops_limits.max_auto_strikes_per_carrier_per_day` = 2) | `R-base-after-…-151947`: lỗi hãng oan 1 → 0 (ở `T-002@55` G1 chặn trước nên không tới bước ghi lỗi); nhánh trần strike để phòng ngừa |
+| G3 | Chỉ gửi hãng các trường được phép | `write_gate` · `notify_carrier` | Payload có `customer_note` (nguyên văn lời khách) và `recipient_contact` (tên, số điện thoại) khi đơn là quà tặng | `R-base-after-…-151947`: lộ dữ liệu 0 → 0 (bộ nền chưa có ca lộ; phòng ngừa) |
 
 Kiểm tra đã chạy:
 - `python -m unittest discover -s tests` → `Ran 13 tests … OK`, gồm `test_team_guards_do_not_break_base` (cổng không làm hỏng ca nào đang đúng ở bộ nền). Unit test không ghi vào `runs/journal.jsonl`.
@@ -84,8 +85,9 @@ Lưu ý cho Nga và Tâm: G1 không thay `daily_refund_cap_vnd` (trần đó do 
 
 | Mã lần chạy | Bộ · mốc | Đổi MỘT thứ gì | Kết luận |
 |---|---|---|---|
-| | base · base | baseline | |
-| | base · after | cổng vòng 1 | |
+| `R-base-before-20261119-151942-c7dc97` | base · base | baseline | pass_rate 0,9909 [0,9727; 1,0], pass_k 0,9545; `[CHƯA]` hoàn sai 20.000đ và 1 lỗi hãng oan, cả hai từ `T-002@55` (kho HCM, hãng VNX); mọi ngưỡng `business_ops` đạt (4.203đ/ticket, ROI 1,34, 0 ca ùn) |
+| `R-base-after-20261119-151947-c7dc97` | base · after | cổng P0 + G1–G3 (config đã có `business` của Nga) | pass_rate 1,0, pass_k 1,0, hoàn sai 0, lỗi hãng oan 0, lộ dữ liệu 0, không ca nào hỏng; độ phủ 0,5909 và ROI 0,94 do phạm vi pilot HN + HCM |
+| _(trong tiến trình, không ghi journal)_ | base, phạm vi `all` | chỉ cổng | 110 lần chạy, pass_rate 1,0, hoàn sai 0, lỗi hãng oan 0, tỉ lệ chuyển người 0,2273 (bằng baseline) → cổng không tăng việc cho người duyệt |
 | | base · prepared | chốt vòng 1 | |
 | | Sx · prepared (lệnh 6) | chưa sửa | |
 | | Sx · after | | |
