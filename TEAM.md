@@ -215,7 +215,7 @@ Vận hành và pháp lý. Câu 1.2, 1.4, 2.4, 2.10, 3.1 (phần riêng theo th�
 
 ### Dùng AI
 
-Dùng Claude (Claude Code) để: đọc `lab10/agent.py`, `lab10/tools.py`, `lab10/ops.py` và `data/world.json` để tìm dữ kiện cho HAZOP và runbook; soạn nháp câu trả lời câu 1.2, 1.4, 2.4, 2.5, 2.10; chạy trace và chạy thử cấu hình `operations` trong tiến trình (không ghi journal) để chọn con số; commit và push từng câu. Em đã đọc lại, hỏi lại từng câu (đề hỏi gì, số lấy từ đâu) và đối chiếu số với `world.json` và report chính thức của Huyền trước khi giữ lại. Exit ticket do AI soạn theo ý em kể lại rồi em đọc và giữ. Bảng pre-mortem B6 là bản nháp để cả bàn sửa lại theo lời từng người; ngưỡng tiêu chí và quyết định v1/v2 là của cả bàn, không do AI chọn.
+Dùng Claude (Claude Code) để: đọc `lab10/agent.py`, `lab10/tools.py`, `lab10/ops.py` và `data/world.json` để tìm dữ kiện cho HAZOP và runbook; soạn nháp câu trả lời câu 1.2, 1.4, 2.4, 2.5, 2.10; chạy trace và chạy thử cấu hình `operations` trong tiến trình (không ghi journal) để chọn con số; commit và push từng câu. Em đã đọc lại, hỏi lại từng câu (đề hỏi gì, số lấy từ đâu) và đối chiếu số với `world.json` và report chính thức của Huyền trước khi giữ lại. Exit ticket do AI soạn nháp từ phần việc em đã làm, em đọc lại và giữ. Bảng pre-mortem B6 là bản nháp để cả bàn sửa lại theo lời từng người; ngưỡng tiêu chí và quyết định v1/v2 là của cả bàn, không do AI chọn.
 
 ### Exit ticket
 
