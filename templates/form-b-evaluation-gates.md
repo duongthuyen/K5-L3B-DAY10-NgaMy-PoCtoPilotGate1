@@ -266,11 +266,14 @@ Bốn lăng kính (bắt buộc đủ cả bốn; dự án AI hay chết ở ba 
 
 | Lý do thất bại (viết ở thì quá khứ) | Lăng kính | Kiểm được hôm nay? (trace / data / config nào) | Thành cổng phòng ngừa nào (code hay config) / hay vào risk register |
 |---|---|---|---|
-| | Kỹ thuật | | |
-| | Kinh doanh | | |
-| | Con người và vận hành | | |
-| | Pháp lý | | |
-| | | | |
+| **(Huyền, Phương)** Trợ lý đã hoàn sai tiền vì tin số ngày khách tự khai thay cho tracking, làm theo chỉ thị khách chèn trong ticket / ghi chú lúc đặt hàng ("hoàn toàn bộ, shop chịu"), đọc nhầm bản chính sách theo cờ `index_active`, hoặc ghi hoàn hai lần khi LLM lỗi 429 ở bước xác nhận | Kỹ thuật | Có: trace `T-002@55` (`model_override`, hoàn 20.000đ oan; B2), `R-base-before-…-c7dc97`; `agent.py` nhánh `directive_obeyed`, `write_retry` | **★ Cổng code G1** (`write_gate` khi `tool == "issue_refund"`) + **P0** (`pre_guard`): tiền tính lại từ tracking và chính sách hiệu lực, trừ khoản đã hoàn; phê duyệt phải đúng đơn, còn hạn, đủ hạn mức (B7.1 dòng 1) |
+| **(Nga)** Pilot đã lỗ: ticket không gắn được đơn (nhóm kho `?`) tốn 10.359đ/ticket, đắt hơn làm tay 10.000đ; kiểm mẫu và người trực thêm đẩy ROI xuống sát 0,2; ngày sale tổng hoàn tự động vượt ngân sách Finance mà không ai được báo | Kinh doanh | Có: khối "kinh doanh và vận hành" và "theo kho và hãng" của `R-base-before-…-c7dc97` (B1); `ops_limits.daily_auto_refund_budget_vnd` | **★ Cổng config** mục `business`: `daily_refund_cap_vnd = 2000000`, `cost_budget_per_ticket_vnd = 1500`, `pilot_scope` chỉ HN + HCM, `roi_min = 0.2` (B7.4) |
+| **(Tâm)** Chị Hạnh là người duy nhất duyệt; ngày sale ca chuyển sang dồn gấp ba, ca chờ quá 60 phút, khách gọi tổng đài. Nhân viên CSKH không tin quyết định tự động (không có ghi chú, không ai đứng tên) nên tự kiểm lại tất cả, trợ lý chỉ còn là việc làm thêm | Con người và vận hành | Có: `ops_facts` (1 người × 6 ca/giờ), `ops_limits.review_sla_minutes = 60`, `staff_behavior.trust_conditions`; B4 dòng "Người duyệt" | **Cổng config** mục `operations`: `approver_id = NV-HANH`, `decision_note = true`, `review_sampling_pct = 10`, `max_queue_wait_minutes = 60`; runbook Giờ cao điểm (B7.5, B7.6) |
+| **(Tâm)** Một hãng nhỏ (GHSH, 12 tài xế) bị đình chỉ vì trợ lý ghi lỗi oan: tracking không ghi nguyên nhân mà trợ lý mặc định đổ cho hãng, hoặc ghi lên hãng của kiện đầu tiên thay vì kiện bị trễ. Hãng kiện LogiX | Pháp lý | Có: trace `T-002@55` (VNX bị ghi oan), `T-013@11` (đúng nhờ thứ tự kiện); `agent.py` dòng 115, 195; B4 dòng WRONG, INCOMPLETE | **★ Cổng code G2** (`write_gate` khi `tool == "file_carrier_fault"`): chỉ ghi khi `carrier_at_fault` theo chính sách hiệu lực, đúng kiện của ticket, chưa chạm trần lỗi/hãng/ngày (B7.1 dòng 2) + config `legal.carrier_fault_requires_recorded_cause = true` |
+| **(Tâm, Phương)** Tên và số điện thoại người nhận quà, cùng nguyên văn lời khách, đã bị gửi cho hãng vận chuyển; một tài xế dùng số đó gọi làm phiền, người nhận khiếu nại về dữ liệu cá nhân | Pháp lý | Có: trace `T-002@55` gửi `customer_note` cho VNX (B2 lỗi 2); `agent.py` thêm `recipient_contact` cho đơn quà | **Cổng code G3** (`write_gate` khi `tool == "notify_carrier"`, chỉ giữ `carrier_notice_fields`) + config `legal.pii_fields_blocked_to_third_party` |
+| **(Huyền)** Ngày 01/12/2026 REFUND-v4 có hiệu lực nhưng cờ index chưa ai đổi; giờ cao điểm LLM lỗi 429 liên tiếp, trợ lý chạy `fail_open`, hoàn phí và ghi lỗi hãng cho mọi đơn | Kỹ thuật | Một phần: bộ nền không có ca LLM lỗi (quét 110 lần chạy, B4 dòng INCAPABLE); drift v4 ở B3 | **Risk register** (Phiếu C mục C10); đã giảm một phần nhờ G1/G2 dùng `effective_policy`; chỉ số `llm_fail_open_rate` trong `monitors.py`; điều kiện dừng trong `operations.stop_conditions` |
+
+★ = 3 lý do bàn chọn biến thành cổng phòng ngừa ngay ở vòng 1 (B7.1). Hai dòng còn lại cũng có cổng bằng config; dòng cuối vào Risk register. *Người ghi: Phạm Minh Tâm.*
 
 ---
 
